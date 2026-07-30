@@ -1,0 +1,208 @@
+// Crypto Casino & Sportsbook — Prisma Schema
+// SQLite provider. BigInt used for all monetary balances (satoshis-like precision).
+// Note: SQLite stores BigInt as TEXT; Prisma handles conversion.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  username      String   @unique
+  email         String   @unique
+  passwordHash  String
+  avatar        String?
+  role          String   @default("user") // user | mod | admin
+  isAdmin       Boolean  @default(false)
+  // Provably-fair seeds (active pair)
+  serverSeed      String
+  serverSeedHash  String
+  clientSeed      String
+  nonce           Int     @default(0)
+  // Prior (revealed) seed pair for verification
+  prevServerSeed    String?
+  prevServerSeedHash String?
+  prevClientSeed    String?
+  prevNonce         Int?
+  // Lifetime wagered in raw integer (smallest unit of USDT-equivalent, 1e6 precision for stats)
+  lifetimeWagerRaw  BigInt  @default(0)
+  lifetimeWinsRaw   BigInt  @default(0)
+  gamesPlayed       Int     @default(0)
+  vipTierId         String?
+  vipTier           VipTier? @relation(fields: [vipTierId], references: [id])
+  createdAt       DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
+
+  wallets       Wallet[]
+  bets          GameBet[]
+  chatMessages  ChatMessage[]
+  rainsClaimed  RainClaim[]
+  tipsSent      Tip[]      @relation("TipsFrom")
+  tipsReceived  Tip[]      @relation("TipsTo")
+  withdrawals   Withdrawal[]
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset     String   // BTC | ETH | USDT | SOL | LTC | DOGE | BCH | XRP
+  balance   BigInt   @default(0) // smallest unit (1e8)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, asset])
+  @@index([userId])
+}
+
+model WalletLedger {
+  id              String   @id @default(cuid())
+  userId          String
+  asset           String
+  amountRaw       BigInt   // positive = credit, negative = debit (in 1e8 units)
+  balanceAfterRaw BigInt
+  transactionType String   // DEPOSIT | WITHDRAWAL | BET | WIN | RAKEBACK | TIP_SENT | TIP_RECEIVED | RAIN | BONUS
+  reference       String?  // game bet id / withdrawal id / rain id
+  note            String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, asset])
+  @@index([createdAt])
+}
+
+model GameBet {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game         String   // crash | dice | plinko | mines | limbo | wheel | keno | tower
+  asset        String
+  betAmountRaw BigInt
+  payoutRaw    BigInt   @default(0) // 0 on loss
+  multiplier   Float    @default(0)
+  outcome      String   // JSON-serialized outcome detail
+  win          Boolean  @default(false)
+  // Provably-fair footprint for this bet
+  serverSeed   String
+  clientSeed   String
+  nonce        Int
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([game, createdAt])
+  @@index([win])
+}
+
+model VipTier {
+  id              String   @id @default(cuid())
+  name            String   @unique // Bronze | Silver | Gold | Platinum I..IV | Diamond
+  level           Int      @unique
+  requiredWagerRaw BigInt  // USDT-equivalent lifetime wager threshold (1e8 units)
+  rakebackPct     Float    // e.g. 0.05 for 5%
+  levelUpBonusRaw BigInt   // USDT bonus credited on tier-up (1e8 units)
+  dedicatedHost   Boolean  @default(false)
+  users           User[]
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username   String
+  avatar     String?
+  role       String   @default("user")
+  channel    String   // chat:en | chat:vip
+  text       String
+  type       String   @default("message") // message | system | rain | tip
+  metadata   String?  // JSON
+  createdAt  DateTime @default(now())
+
+  @@index([channel, createdAt])
+}
+
+model Rain {
+  id           String    @id @default(cuid())
+  amountRaw    BigInt
+  asset        String
+  participants Int
+  status       String    @default("active") // active | completed | expired
+  startedAt    DateTime  @default(now())
+  expiresAt    DateTime
+  claims       RainClaim[]
+}
+
+model RainClaim {
+  id        String   @id @default(cuid())
+  rainId    String
+  rain      Rain     @relation(fields: [rainId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountRaw BigInt
+  claimedAt DateTime @default(now())
+
+  @@unique([rainId, userId])
+}
+
+model Tip {
+  id         String   @id @default(cuid())
+  fromUserId String
+  fromUser   User     @relation("TipsFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUserId   String
+  toUser     User     @relation("TipsTo", fields: [toUserId], references: [id], onDelete: Cascade)
+  amountRaw  BigInt
+  asset      String
+  message    String?
+  createdAt  DateTime @default(now())
+
+  @@index([toUserId, createdAt])
+}
+
+model Withdrawal {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset      String
+  amountRaw  BigInt
+  address    String
+  status     String   @default("pending") // pending | approved | rejected | completed
+  txHash     String?
+  createdAt  DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([userId, createdAt])
+}
+
+model SportsMatch {
+  id         String   @id @default(cuid())
+  sport      String   // football | basketball | tennis | esports | mma ...
+  league     String
+  homeTeam   String
+  awayTeam   String
+  startTime  DateTime
+  status     String   @default("upcoming") // upcoming | live | ended
+  liveMinute Int?
+  // Odds encoded as JSON string (SQLite has no native JSON)
+  oddsJson   String
+  scoreHome  Int      @default(0)
+  scoreAway  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([sport, status])
+}
+
+model BetFeedCache {
+  id        String   @id @default(cuid())
+  username  String
+  game      String
+  asset     String
+  betRaw    BigInt
+  multiplier Float
+  payoutRaw BigInt
+  win       Boolean
+  createdAt DateTime @default(now())
+}
