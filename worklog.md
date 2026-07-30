@@ -95,3 +95,40 @@ Stage Summary:
 - VIP engine (8 tiers, rakeback accrual, tier-up bonuses).
 - Responsive Stake-style premium dark UI.
 - "389 issues" Next.js dev badge = TS strictness hints only (ignoreBuildErrors=true), no runtime impact.
+
+---
+Task ID: 13
+Agent: orchestrator
+Task: Continue platform build — add Tower & Keno games (skipping deposit flow, keeping demo-credit approach), fix chat feed duplicate-key warnings, end-to-end verify.
+
+Work Log:
+- Reviewed existing scaffold: 6 playable games (Crash/Dice/Plinko/Mines/Limbo/Wheel) + Tower/Keno listed in lobby but showing "Game coming soon".
+- Confirmed provably-fair engine already had `towerGrid`/`towerMultiplier`/`kenoDraw`/`kenoMultiplier` + verification cases, and `/api/games/play` resolveGame already handled `tower` & `keno` cases fully (single-shot).
+- Built Tower as a STATEFUL game (mirroring Mines pattern — start/pick/cashout) for authentic Stake-like UX:
+  - Created `/api/games/tower/start/route.ts`: debits bet in tx, bumps nonce, generates `towerGrid` via captured seed triple, stores in active-games (10min TTL), returns gameId + nextMultiplier.
+  - Created `/api/games/tower/pick/route.ts`: validates column 0-8, walks grid rows, returns safe (update picks + multiplier) or busted (record GameBet loss, deleteGame).
+  - Created `/api/games/tower/cashout/route.ts`: credits payout via applyLedger, records winning GameBet, mega-win chat notify (≥10×), deleteGame.
+  - Built `src/components/games/tower-game.tsx`: 9×9 grid rendered top-to-bottom (climb upward), Easy/Medium/Hard difficulty toggle (4/3/2 safe per row), current-row highlighted with animate-pulse, safe picks show green Star, busts show red Skull, cashout button with live payout preview, auto-cashout when reaching top row.
+- Built Keno as a SINGLE-SHOT game (uses existing `/api/games/play`):
+  - Built `src/components/games/keno-game.tsx`: 40-number board (8×5 grid), pick 1-10 numbers, quick-pick buttons (1/2/3/5/7/8/9/10), animated draw revealing 10 numbers one-by-one (180ms each), matched numbers glow green with Sparkles icon, result stats panel (Picks/Matches/Multiplier/Payout), max-payout preview from kenoMultiplier table.
+- Wired both into `src/components/games/game-view.tsx` renderGame switch.
+- Fixed pre-existing React duplicate-key console warnings in `src/store/chat.ts`: `addMessage`/`prependMessages`/`addBetFeed` now deduplicate by ID (socket reconnects were re-sending history causing dup keys).
+- Restarted dev server (next-server had died silently mid-session; `bun run dev` parent zombie). Killed PID 6967, relaunched via `setsid --fork bun run dev`.
+
+Agent Browser end-to-end verification (port 81 gateway):
+- Lobby: all 8 games render (Crash/Dice/Plinko/Mines/Limbo/Wheel/Tower/Keno).
+- Tower (Easy, bet 1 USDT): placed bet (109.82→108.82), climbed row 1 safe → Cash Out 2.2200 enabled (matches towerMultiplier("easy",1)=2.22), climbed row 2 → busted (expected, ~20% two-safe odds). Retried: safe row 1 → cashed out → balance 106.82→109.04 (+2.22 payout). Toast "💰 Cashed out 2.2200 USDT (2.22×)".
+- Keno (bet 1 USDT, picked 7/14/21/28/35): Draw button enabled, draw animation ran, result panel showed PICKS/MATCHES/MULTIPLIER/PAYOUT (payout 0.0000 — no matches), max-payout preview "420.00×" correct for 5 picks.
+- Balance math verified end-to-end: 109.82 → (Tower bust -1) 108.82 → (Tower bust -1) 107.82 → (Tower cashout +2.22) 109.04 → (Keno loss -1) 108.04.
+- Console: zero errors/warnings after dedup fix (previously spammed "Encountered two children with the same key" UUID warnings on socket reconnect).
+- Chat: live with bots posting (LimboLegend, WheelSpinner, LuckyChip, PlinkoPro).
+- Lint: clean (0 errors, 0 warnings).
+- Dev log: all routes 200 (tower/start, tower/pick, tower/cashout, games/play for keno, games/history for both).
+
+Stage Summary:
+- Platform now ships 8 fully playable provably-fair games (was 6). Tower & Keno complete with HMAC-SHA256 verification support.
+- Tower: stateful start/pick/cashout API + interactive grid UI, 3 difficulties, auto-cashout at top.
+- Keno: single-shot draw with animated reveal, 1-10 picks, 10-tier payout table (max 50000× for 10/10).
+- Chat feed duplicate-key bug fixed (dedup in zustand store).
+- Deposit flow untouched (demo-credit approach retained per user instruction "skip deposit").
+- All systems verified: lint clean, no console errors, dev server stable, chat live, balance math correct.

@@ -8,6 +8,8 @@ import { PlinkoGame } from "./plinko-game";
 import { MinesGame } from "./mines-game";
 import { LimboGame } from "./limbo-game";
 import { WheelGame } from "./wheel-game";
+import { TowerGame } from "./tower-game";
+import { KenoGame } from "./keno-game";
 import { RecentBets } from "./recent-bets";
 import { api } from "@/lib/api-client";
 import { useAuthStore } from "@/store/auth";
@@ -49,6 +51,10 @@ function renderGame(gameId: string, onPlayed: () => void) {
       return <LimboGame onPlayed={onPlayed} />;
     case "wheel":
       return <WheelGame onPlayed={onPlayed} />;
+    case "tower":
+      return <TowerGame onPlayed={onPlayed} />;
+    case "keno":
+      return <KenoGame onPlayed={onPlayed} />;
     default:
       return <div className="text-center text-[#b1bad3] py-20">Game coming soon.</div>;
   }

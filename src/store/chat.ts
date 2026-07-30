@@ -63,16 +63,22 @@ export const useChatStore = create<ChatState>((set) => ({
   typingUsers: [],
   addMessage: (m) =>
     set((s) => {
+      if (s.messages.some((x) => x.id === m.id)) return s;
       const messages = [...s.messages, m].slice(-MAX_MESSAGES);
       return { messages };
     }),
   prependMessages: (ms) =>
     set((s) => {
-      const messages = [...ms, ...s.messages].slice(-MAX_MESSAGES);
+      const existing = new Set(s.messages.map((x) => x.id));
+      const fresh = ms.filter((x) => !existing.has(x.id));
+      const messages = [...fresh, ...s.messages].slice(-MAX_MESSAGES);
       return { messages };
     }),
   addBetFeed: (b) =>
-    set((s) => ({ betFeed: [b, ...s.betFeed].slice(0, MAX_FEED) })),
+    set((s) => {
+      if (s.betFeed.some((x) => x.id === b.id)) return s;
+      return { betFeed: [b, ...s.betFeed].slice(0, MAX_FEED) };
+    }),
   setOnline: (n) => set({ online: n }),
   setConnected: (b) => set({ connected: b }),
   setActiveRain: (r) => set({ activeRain: r }),
