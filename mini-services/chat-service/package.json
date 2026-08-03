@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "bun --hot index.ts"
+    "dev": "node --experimental-strip-types index.ts",
+    "start": "node --experimental-strip-types index.ts"
   },
   "dependencies": {
     "socket.io": "^4.7.5"

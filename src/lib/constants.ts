@@ -79,17 +79,28 @@ export interface GameMeta {
   emoji: string;
   gradient: string; // tailwind gradient for lobby card
   description: string;
+  imageUrl?: string; // path to thumbnail image
 }
 
 export const GAMES: GameMeta[] = [
-  { id: "crash", name: "Crash", category: "originals", tag: "Popular", houseEdgePct: 1, emoji: "🚀", gradient: "from-rose-500/20 to-red-700/20", description: "Watch the multiplier rise and cash out before it crashes." },
-  { id: "dice", name: "Dice", category: "originals", tag: "Classic", houseEdgePct: 1, emoji: "🎲", gradient: "from-emerald-500/20 to-teal-700/20", description: "Roll under your target to win. Adjustable risk." },
-  { id: "plinko", name: "Plinko", category: "originals", tag: "Popular", houseEdgePct: 1, emoji: "🔻", gradient: "from-violet-500/20 to-purple-700/20", description: "Drop the ball, win the multiplier it lands on." },
-  { id: "mines", name: "Mines", category: "originals", tag: "Skill", houseEdgePct: 1, emoji: "💣", gradient: "from-orange-500/20 to-amber-700/20", description: "Reveal gems, avoid mines. Cash out anytime." },
-  { id: "limbo", name: "Limbo", category: "originals", houseEdgePct: 1, emoji: "📈", gradient: "from-sky-500/20 to-blue-700/20", description: "Set a target multiplier, roll to beat it." },
-  { id: "wheel", name: "Wheel", category: "originals", tag: "New", houseEdgePct: 1, emoji: "🎡", gradient: "from-pink-500/20 to-rose-700/20", description: "Spin the wheel of multipliers." },
-  { id: "tower", name: "Tower", category: "originals", houseEdgePct: 1, emoji: "🗼", gradient: "from-lime-500/20 to-green-700/20", description: "Climb the tower by picking safe tiles." },
-  { id: "keno", name: "Keno", category: "originals", houseEdgePct: 4, emoji: "🔢", gradient: "from-cyan-500/20 to-teal-700/20", description: "Pick numbers, match to win big." },
+  { id: "crash",       name: "Crash",          category: "originals", tag: "Popular",  houseEdgePct: 1,    emoji: "🚀", gradient: "from-rose-500/20 to-red-700/20",     imageUrl: "/games/crash.png",       description: "Watch the multiplier rise and cash out before it crashes." },
+  { id: "dice",        name: "Dice",           category: "originals", tag: "Classic",  houseEdgePct: 1,    emoji: "🎲", gradient: "from-emerald-500/20 to-teal-700/20",imageUrl: "/games/dice.png",        description: "Roll under your target to win. Adjustable risk." },
+  { id: "plinko",      name: "Plinko",         category: "originals", tag: "Popular",  houseEdgePct: 1,    emoji: "🔻", gradient: "from-violet-500/20 to-purple-700/20",imageUrl: "/games/plinko.png",      description: "Drop the ball, win the multiplier it lands on." },
+  { id: "mines",       name: "Mines",          category: "originals", tag: "Skill",    houseEdgePct: 1,    emoji: "💣", gradient: "from-orange-500/20 to-amber-700/20", imageUrl: "/games/mines.png",       description: "Reveal gems, avoid mines. Cash out anytime." },
+  { id: "limbo",       name: "Limbo",          category: "originals",                  houseEdgePct: 1,    emoji: "📈", gradient: "from-sky-500/20 to-blue-700/20",     imageUrl: "/games/limbo.png",       description: "Set a target multiplier, roll to beat it." },
+  { id: "wheel",       name: "Wheel",          category: "originals", tag: "Classic",  houseEdgePct: 1,    emoji: "🎡", gradient: "from-pink-500/20 to-rose-700/20",    imageUrl: "/games/wheel.png",       description: "Spin the wheel of multipliers." },
+  { id: "tower",       name: "Tower",          category: "originals",                  houseEdgePct: 1,    emoji: "🗼", gradient: "from-lime-500/20 to-green-700/20",   imageUrl: "/games/tower.png",       description: "Climb the tower by picking safe tiles." },
+  { id: "keno",        name: "Keno",           category: "originals",                  houseEdgePct: 4,    emoji: "🔢", gradient: "from-cyan-500/20 to-teal-700/20",    imageUrl: "/games/keno.png",        description: "Pick numbers, match to win big." },
+  { id: "hilo",        name: "HiLo",           category: "originals", tag: "Popular",  houseEdgePct: 1,    emoji: "🃏", gradient: "from-red-500/20 to-rose-900/20",     imageUrl: "/games/hilo.png",        description: "Guess higher or lower. Chain correct guesses for bigger wins." },
+  { id: "coinflip",    name: "Coin Flip",      category: "originals", tag: "Fast",     houseEdgePct: 2,    emoji: "🪙", gradient: "from-yellow-400/20 to-amber-700/20", imageUrl: "/games/coinflip.png",    description: "50/50 call it: heads or tails." },
+  { id: "videopoker",  name: "Video Poker",    category: "originals", tag: "Skill",    houseEdgePct: 2.7,  emoji: "🎴", gradient: "from-green-500/20 to-emerald-900/20",imageUrl: "/games/videopoker.png",  description: "Jacks or Better draw poker. Up to 800× on Royal Flush." },
+  { id: "dragontiger", name: "Dragon Tiger",   category: "originals", tag: "New",      houseEdgePct: 3.73, emoji: "🐉", gradient: "from-orange-500/20 to-red-900/20",   imageUrl: "/games/dragontiger.png", description: "Two cards — Dragon or Tiger? Pick the highest." },
+  { id: "blackjack",   name: "Blackjack",      category: "originals", tag: "Classic",  houseEdgePct: 0.5,  emoji: "🂡", gradient: "from-emerald-600/20 to-green-900/20",imageUrl: "/games/blackjack.png",   description: "Beat the dealer to 21. Hit, Stand, or Double Down." },
+  { id: "baccarat",    name: "Baccarat",       category: "originals", tag: "Classic",  houseEdgePct: 1.06, emoji: "🎰", gradient: "from-purple-500/20 to-violet-900/20", imageUrl: "/games/baccarat.png",    description: "Player or Banker — who gets closest to 9?" },
+  { id: "roulette",    name: "Roulette",       category: "originals", tag: "Classic",  houseEdgePct: 2.7,  emoji: "🔴", gradient: "from-red-600/20 to-rose-900/20",     imageUrl: "/games/roulette.png",    description: "Spin the European wheel. 37 numbers, infinite bets." },
+  { id: "fastcrash",   name: "Fast Crash",     category: "originals", tag: "Turbo",    houseEdgePct: 1,    emoji: "⚡", gradient: "from-lime-400/20 to-green-800/20",   imageUrl: "/games/fastcrash.png",   description: "Instant-resolve Crash with quick-preset cashouts." },
+  { id: "twist",       name: "Twist",          category: "originals", tag: "New",      houseEdgePct: 1,    emoji: "🌀", gradient: "from-fuchsia-500/20 to-purple-900/20",imageUrl: "/games/twist.png",       description: "High-volatility wheel. Up to 1,000,000× jackpot." },
+  { id: "cave",        name: "Cave of Plunder",category: "originals", tag: "New",      houseEdgePct: 1,    emoji: "💎", gradient: "from-amber-500/20 to-yellow-900/20", imageUrl: "/games/cave.png",        description: "Climb three columns. Hold your progress, cash out anytime." },
 ];
 
 export const GAME_MAP: Record<string, GameMeta> = Object.fromEntries(

@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   if (!user) return err("UNAUTHORIZED", 401);
   const body = await req.json().catch(() => ({}));
   const gameId = String(body.gameId || "");
-  const game = getGame(gameId);
+  const game = await getGame(gameId);
   if (!game) return err("Game not found or expired", 404);
   if (game.userId !== user.id) return err("Not your game", 403);
   if (game.status !== "active") return err("Game already ended", 400);
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       win: true, serverSeed: game.serverSeed, clientSeed: game.clientSeed, nonce: game.nonce,
     },
   });
-  deleteGame(gameId);
+  await deleteGame(gameId, user.id, "mines");
 
   // mega win notify
   if (multiplier >= 10) {

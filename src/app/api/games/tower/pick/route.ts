@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const gameId = String(body.gameId || "");
   const col = Number(body.col);
-  const game = getGame(gameId);
+  const game = await getGame(gameId);
   if (!game) return err("Game not found or expired", 404);
   if (game.userId !== user.id) return err("Not your game", 403);
   if (game.status !== "active") return err("Game already ended", 400);
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (!isSafe) {
     // Bust: record the bet as a loss.
     game.picks.push(col);
-    updateGame(gameId, { status: "busted", picks: game.picks });
+    await updateGame(gameId, { status: "busted", picks: game.picks });
     await db.gameBet.create({
       data: {
         userId: user.id, game: "tower", asset: game.asset, betAmountRaw: game.betRaw,
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         win: false, serverSeed: game.serverSeed, clientSeed: game.clientSeed, nonce: game.nonce,
       },
     });
-    deleteGame(gameId);
+    await deleteGame(gameId, user.id, "tower");
     return json({
       ok: true,
       busted: true,
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
   const currentMultiplier = towerMultiplier(difficulty, climbed);
   const rows = grid.length;
   const nextMultiplier = climbed < rows ? towerMultiplier(difficulty, climbed + 1) : currentMultiplier;
-  updateGame(gameId, { picks: game.picks });
+  await updateGame(gameId, { picks: game.picks });
   return json({
     ok: true,
     busted: false,

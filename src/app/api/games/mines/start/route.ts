@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (betRaw <= 0n) return err("Bet must be > 0");
 
   // Forbid multiple active mines games per user (cleaner UX)
-  const existing = userActiveGame(user.id, "mines");
+  const existing = await userActiveGame(user.id, "mines");
   if (existing) return err("You already have an active Mines game — finish it first", 409);
 
   // Capture current seed triple inside a transaction; bump nonce; debit bet.
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   // generate grid (deterministic from captured triple)
   const grid = minesGrid(result.serverSeed, result.clientSeed, result.nonce, mineCount);
   const gameId = randomUUID();
-  createGame({
+  await createGame({
     gameId, userId: user.id, game: "mines", mineCount, difficulty: "", betRaw, asset,
     serverSeed: result.serverSeed, clientSeed: result.clientSeed, nonce: result.nonce,
     picks: [], status: "active", startedAt: Date.now(), grid,

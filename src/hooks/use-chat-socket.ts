@@ -23,9 +23,9 @@ export function useChatSocket() {
 
   useEffect(() => {
     if (socketRef.current) return;
-    const socket = io("/", {
+    const chatUrl = process.env.NEXT_PUBLIC_CHAT_URL || "http://localhost:3003";
+    const socket = io(chatUrl, {
       path: "/",
-      query: { XTransformPort: "3003" },
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1500,

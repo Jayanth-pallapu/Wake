@@ -22,6 +22,12 @@ import {
   kenoDraw,
   kenoMultiplier,
   hashServerSeed,
+  coinFlip,
+  dragonTigerDeal,
+  baccaratDeal,
+  rouletteRoll,
+  rouletteMultiplier,
+  twistSpin,
 } from "@/lib/provably-fair";
 import { recordWager, recomputeVip, wagerRawToUsd } from "@/lib/vip";
 import { usdToRaw } from "@/lib/constants";
@@ -183,6 +189,99 @@ function resolveGame(game: string, params: Record<string, unknown>, serverSeed: 
         win, multiplier: mult,
         payoutRaw: win ? (betRaw * BigInt(Math.round(mult * 100))) / 100n : 0n,
         outcome: { picks: numbers, draw, matches, multiplier: mult },
+      };
+    }
+    case "coinflip": {
+      const pick = String(params.pick || "");
+      if (pick !== "heads" && pick !== "tails") throw new Error("Invalid pick");
+      const result = coinFlip(serverSeed, clientSeed, nonce);
+      const win = result === pick;
+      const mult = win ? 1.96 : 0;
+      return {
+        win, multiplier: mult,
+        payoutRaw: win ? (betRaw * BigInt(Math.round(mult * 100))) / 100n : 0n,
+        outcome: { result, pick },
+      };
+    }
+    case "dragontiger": {
+      const bet = String(params.bet || "");
+      if (!["dragon", "tiger", "tie"].includes(bet)) throw new Error("Invalid bet");
+      const result = dragonTigerDeal(serverSeed, clientSeed, nonce);
+      const isTie = result.winner === "tie";
+      const win = result.winner === bet;
+      let mult = 0;
+      let payoutRaw = 0n;
+      if (win && bet === "tie") {
+        mult = 8.0;
+        payoutRaw = betRaw * 8n;
+      } else if (win) {
+        mult = 1.95;
+        payoutRaw = (betRaw * 195n) / 100n;
+      } else if (isTie) {
+        mult = 0.5;
+        payoutRaw = betRaw / 2n;
+      }
+      return {
+        win: win || (isTie && bet !== "tie"), multiplier: mult, payoutRaw,
+        outcome: { result, bet },
+      };
+    }
+    case "baccarat": {
+      const bet = String(params.bet || "");
+      if (!["player", "banker", "tie"].includes(bet)) throw new Error("Invalid bet");
+      const result = baccaratDeal(serverSeed, clientSeed, nonce);
+      const win = result.winner === bet;
+      let mult = 0;
+      let payoutRaw = 0n;
+      if (win) {
+        if (bet === "tie") mult = 8.0;
+        else if (bet === "banker") mult = 1.90;
+        else mult = 1.95;
+        payoutRaw = (betRaw * BigInt(Math.round(mult * 100))) / 100n;
+      } else if (result.winner === "tie") {
+        mult = 1.0;
+        payoutRaw = betRaw;
+      }
+      return {
+        win: win || (result.winner === "tie" && bet !== "tie"), multiplier: mult, payoutRaw,
+        outcome: { result, bet },
+      };
+    }
+    case "roulette": {
+      const betType = String(params.betType || "");
+      const betValue = params.betValue as number | string;
+      if (!betType) throw new Error("Invalid betType");
+      const roll = rouletteRoll(serverSeed, clientSeed, nonce);
+      let mult = rouletteMultiplier(betType, betValue, roll);
+      if (betType === "straight" && mult > 0) mult = 36;
+      const win = mult > 0;
+      return {
+        win, multiplier: mult,
+        payoutRaw: win ? (betRaw * BigInt(Math.round(mult * 100))) / 100n : 0n,
+        outcome: { roll, betType, betValue, multiplier: mult },
+      };
+    }
+    case "fastcrash": {
+      const target = Number(params.target);
+      if (!target || target < 1.01 || target > 1_000_000) throw new Error("Invalid crash target");
+      const crash = crashMultiplier(serverSeed, clientSeed, nonce);
+      const win = crash >= target;
+      const mult = win ? target : 0;
+      return {
+        win,
+        multiplier: mult,
+        payoutRaw: win ? (betRaw * BigInt(Math.round(mult * 100))) / 100n : 0n,
+        outcome: { crashPoint: crash, target, cashedAt: win ? target : null },
+      };
+    }
+    case "twist": {
+      const result = twistSpin(serverSeed, clientSeed, nonce);
+      const win = result.multiplier > 0;
+      const mult = result.multiplier;
+      return {
+        win, multiplier: mult,
+        payoutRaw: win ? (betRaw * BigInt(Math.round(mult * 100))) / 100n : 0n,
+        outcome: { ...result },
       };
     }
     default:
