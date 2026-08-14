@@ -1,6 +1,8 @@
 {
   "buildCommand": "npx prisma generate && npx prisma db push --accept-data-loss && next build",
   "framework": "nextjs",
+  "public": true,
+
 
   "headers": [
     {
