@@ -52,3 +52,24 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# SQLite database — never commit actual data
+*.db
+*.db-shm
+*.db-wal
+/db/
+
+# Prisma generated client (generated at build time by vercel.json buildCommand)
+# Keep schema.prisma but not the runtime generated files
+# node_modules/@prisma/client is already excluded via node_modules
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor
+.vscode/settings.json
+.idea/
+*.suo
+*.user

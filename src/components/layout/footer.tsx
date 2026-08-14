@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Github, Twitter, Send, ShieldCheck } from "lucide-react";
 import { useUiStore } from "@/store/ui";
@@ -12,29 +12,29 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3">Games</h4>
             <ul className="space-y-2 text-xs text-[#b1bad3]">
-              <li><button onClick={() => setView({ kind: "game", gameId: "crash" })} className="hover:text-[#00e701]">Crash</button></li>
-              <li><button onClick={() => setView({ kind: "game", gameId: "dice" })} className="hover:text-[#00e701]">Dice</button></li>
-              <li><button onClick={() => setView({ kind: "game", gameId: "plinko" })} className="hover:text-[#00e701]">Plinko</button></li>
-              <li><button onClick={() => setView({ kind: "game", gameId: "mines" })} className="hover:text-[#00e701]">Mines</button></li>
-              <li><button onClick={() => setView({ kind: "game", gameId: "limbo" })} className="hover:text-[#00e701]">Limbo</button></li>
+              <li><button onClick={() => setView({ kind: "game", gameId: "crash" })} className="hover:text-[#00c2ff]">Crash</button></li>
+              <li><button onClick={() => setView({ kind: "game", gameId: "dice" })} className="hover:text-[#00c2ff]">Dice</button></li>
+              <li><button onClick={() => setView({ kind: "game", gameId: "plinko" })} className="hover:text-[#00c2ff]">Plinko</button></li>
+              <li><button onClick={() => setView({ kind: "game", gameId: "mines" })} className="hover:text-[#00c2ff]">Mines</button></li>
+              <li><button onClick={() => setView({ kind: "game", gameId: "limbo" })} className="hover:text-[#00c2ff]">Limbo</button></li>
             </ul>
           </div>
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3">Platform</h4>
             <ul className="space-y-2 text-xs text-[#b1bad3]">
-              <li><button onClick={() => setView({ kind: "sports" })} className="hover:text-[#00e701]">Sportsbook</button></li>
-              <li><button onClick={() => setView({ kind: "vip" })} className="hover:text-[#00e701]">VIP Club</button></li>
-              <li><button onClick={() => setView({ kind: "leaderboard" })} className="hover:text-[#00e701]">Leaderboard</button></li>
-              <li><button onClick={() => setView({ kind: "affiliate" })} className="hover:text-[#00e701]">Affiliate</button></li>
+              <li><button onClick={() => setView({ kind: "sports" })} className="hover:text-[#00c2ff]">Sportsbook</button></li>
+              <li><button onClick={() => setView({ kind: "vip" })} className="hover:text-[#00c2ff]">VIP Club</button></li>
+              <li><button onClick={() => setView({ kind: "leaderboard" })} className="hover:text-[#00c2ff]">Leaderboard</button></li>
+              <li><button onClick={() => setView({ kind: "affiliate" })} className="hover:text-[#00c2ff]">Affiliate</button></li>
             </ul>
           </div>
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3">Support</h4>
             <ul className="space-y-2 text-xs text-[#b1bad3]">
-              <li><span className="hover:text-[#00e701] cursor-pointer">Live Chat 24/7</span></li>
-              <li><span className="hover:text-[#00e701] cursor-pointer">Help Center</span></li>
-              <li><span className="hover:text-[#00e701] cursor-pointer">Provably Fair</span></li>
-              <li><span className="hover:text-[#00e701] cursor-pointer">Responsible Gaming</span></li>
+              <li><span className="hover:text-[#00c2ff] cursor-pointer">Live Chat 24/7</span></li>
+              <li><span className="hover:text-[#00c2ff] cursor-pointer">Help Center</span></li>
+              <li><span className="hover:text-[#00c2ff] cursor-pointer">Provably Fair</span></li>
+              <li><span className="hover:text-[#00c2ff] cursor-pointer">Responsible Gaming</span></li>
             </ul>
           </div>
           <div>
@@ -48,7 +48,7 @@ export function Footer() {
         </div>
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-4 border-t border-[#2f4553]">
           <div className="flex items-center gap-2 text-xs text-[#b1bad3]">
-            <ShieldCheck className="w-4 h-4 text-[#00e701]" />
+            <ShieldCheck className="w-4 h-4 text-[#00c2ff]" />
             <span>Provably Fair · HMAC-SHA256 verified</span>
           </div>
           <p className="text-[11px] text-[#55657a] text-center md:text-right">

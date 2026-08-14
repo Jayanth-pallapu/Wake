@@ -6,8 +6,18 @@ import { cookies } from "next/headers";
 import { db } from "./db";
 import type { User } from "@prisma/client";
 
-const AUTH_SECRET =
-  process.env.AUTH_SECRET || "dev-secret-change-me-in-production-0xDEADBEEF";
+// AUTH_SECRET must be a strong random string in production.
+// Generate with: openssl rand -base64 48
+function getAuthSecret(): string {
+  const secret = process.env.AUTH_SECRET;
+  if (process.env.NODE_ENV === "production" && (!secret || secret.length < 32)) {
+    throw new Error(
+      "[auth] AUTH_SECRET env var is missing or too short. "
+      + "Generate one with: openssl rand -base64 48"
+    );
+  }
+  return secret ?? "dev-secret-change-me-in-production-0xDEADBEEF";
+}
 const COOKIE_NAME = "zc_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
@@ -28,7 +38,7 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 function sign(payload: string): string {
-  const sig = createHmac("sha256", AUTH_SECRET).update(payload).digest("base64url");
+  const sig = createHmac("sha256", getAuthSecret()).update(payload).digest("base64url");
   return `${payload}.${sig}`;
 }
 
@@ -37,7 +47,7 @@ function verify(token: string): string | null {
   if (idx < 0) return null;
   const payload = token.slice(0, idx);
   const sig = token.slice(idx + 1);
-  const expected = createHmac("sha256", AUTH_SECRET).update(payload).digest("base64url");
+  const expected = createHmac("sha256", getAuthSecret()).update(payload).digest("base64url");
   try {
     if (sig.length !== expected.length) return null;
     if (!timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;

@@ -10,6 +10,7 @@ let lastDrift = 0;
 function ensureMatches(): MatchOdds[] {
   if (matchStore && matchStore.length > 0) return matchStore!;
   matchStore = [];
+  const seen = new Set<string>();
   for (const s of SPORTS) {
     for (const league of s.leagues) {
       const teams = TEAMS[s.sport] || ["Team A", "Team B"];
@@ -20,7 +21,11 @@ function ensureMatches(): MatchOdds[] {
         let away = teams[Math.floor(Math.random() * teams.length)];
         while (away === home) away = teams[Math.floor(Math.random() * teams.length)];
         if (home === away) continue;
-        matchStore.push(genMatch(s.sport, league, home, away));
+        const match = genMatch(s.sport, league, home, away);
+        // Extra dedup safety net — skip if matchId already exists
+        if (seen.has(match.matchId)) continue;
+        seen.add(match.matchId);
+        matchStore.push(match);
       }
     }
   }

@@ -57,8 +57,13 @@ export function genMatch(sport: string, league: string, home: string, away: stri
   const baseHome = 1.5 + Math.random() * 2.5;
   const baseAway = 1.5 + Math.random() * 2.5;
   const draw = hasDraw ? Math.max(2.8, 6 - Math.abs(baseHome - baseAway)) : null;
+  // Include league slug + random suffix to guarantee uniqueness across leagues
+  const leagueSlug = league.replace(/\s+/g, "-").toLowerCase().slice(0, 12);
+  const suffix = Math.random().toString(36).slice(2, 6);
   return {
-    matchId: `${sport}-${home}-${away}`.replace(/\s+/g, "-").toLowerCase(),
+    matchId: `${sport}-${home}-${away}-${leagueSlug}-${suffix}`
+      .replace(/\s+/g, "-")
+      .toLowerCase(),
     homeTeam: home,
     awayTeam: away,
     sport,

@@ -1,4 +1,4 @@
-// Platform-wide constants: supported assets, VIP tiers, game configs.
+﻿// Platform-wide constants: supported assets, VIP tiers, game configs.
 
 export const UNIT = 100_000_000n; // 1e8 — smallest unit precision (satoshis-like)
 
@@ -16,12 +16,12 @@ export interface AssetConfig {
 export const ASSETS: AssetConfig[] = [
   { symbol: "BTC", name: "Bitcoin", icon: "₿", color: "text-orange-400", decimals: 8, baseAmountRaw: 5_000n * UNIT / 100n, usdPerUnit: 62000 },
   { symbol: "ETH", name: "Ethereum", icon: "Ξ", color: "text-indigo-300", decimals: 8, baseAmountRaw: 20_000n * UNIT / 100n, usdPerUnit: 3200 },
-  { symbol: "USDT", name: "Tether", icon: "$", color: "text-green-400", decimals: 8, baseAmountRaw: 100n * UNIT, usdPerUnit: 1 },
+  { symbol: "USDT", name: "Tether", icon: "$", color: "text-[#00c2ff]", decimals: 8, baseAmountRaw: 100n * UNIT, usdPerUnit: 1 },
   { symbol: "SOL", name: "Solana", icon: "◎", color: "text-purple-400", decimals: 8, baseAmountRaw: 50_000n * UNIT / 100n, usdPerUnit: 150 },
   { symbol: "LTC", name: "Litecoin", icon: "Ł", color: "text-slate-300", decimals: 8, baseAmountRaw: 100n * UNIT, usdPerUnit: 80 },
   { symbol: "XRP", name: "Ripple", icon: "✕", color: "text-sky-400", decimals: 8, baseAmountRaw: 500n * UNIT, usdPerUnit: 0.6 },
   { symbol: "DOGE", name: "Dogecoin", icon: "Ð", color: "text-yellow-400", decimals: 8, baseAmountRaw: 5000n * UNIT, usdPerUnit: 0.13 },
-  { symbol: "BCH", name: "Bitcoin Cash", icon: "₿", color: "text-green-300", decimals: 8, baseAmountRaw: 50n * UNIT, usdPerUnit: 400 },
+  { symbol: "BCH", name: "Bitcoin Cash", icon: "₿", color: "text-cyan-300", decimals: 8, baseAmountRaw: 50n * UNIT, usdPerUnit: 400 },
 ];
 
 export const ASSET_MAP: Record<string, AssetConfig> = Object.fromEntries(
@@ -105,6 +105,39 @@ export const GAMES: GameMeta[] = [
 
 export const GAME_MAP: Record<string, GameMeta> = Object.fromEntries(
   GAMES.map((g) => [g.id, g])
+);
+
+export interface SlotGameMeta {
+  id: string;
+  name: string;
+  provider: string;
+  category: "slots" | "live";
+  emoji: string;
+  color: string; // tailwind gradient classes
+  description: string;
+  rows: number;
+  cols: number;
+  live?: boolean;
+  imageUrl?: string;
+}
+
+export const SLOT_GAMES: SlotGameMeta[] = [
+  { id: "sweet-bonanza",      name: "Sweet Bonanza",      provider: "Pragmatic", category: "slots", emoji: "🍬", color: "from-pink-500/30 to-rose-700/20",     description: "6×5 cluster pays with tumbling reels and free spins.", rows: 5, cols: 6, imageUrl: "/slots/sweet-bonanza.jpg" },
+  { id: "gates-of-olympus",   name: "Gates of Olympus",   provider: "Pragmatic", category: "slots", emoji: "⚡", color: "from-blue-500/30 to-indigo-700/20",   description: "6×5 cascading reels with Zeus lightning multipliers.", rows: 5, cols: 6, imageUrl: "/slots/gates-of-olympus.jpg" },
+  { id: "big-bass-bonanza",   name: "Big Bass Bonanza",   provider: "Pragmatic", category: "slots", emoji: "🎣", color: "from-cyan-500/30 to-teal-700/20",     description: "5×3 fishing slot with fisherman wilds and free spins.", rows: 3, cols: 5, imageUrl: "/slots/big-bass-bonanza.jpg" },
+  { id: "book-of-dead",       name: "Book of Dead",       provider: "Play'n GO", category: "slots", emoji: "📖", color: "from-amber-500/30 to-orange-700/20",  description: "5×3 Egyptian slot with expanding symbol bonus.", rows: 3, cols: 5, imageUrl: "/slots/book-of-dead.jpg" },
+  { id: "wanted-dead",        name: "Wanted Dead",        provider: "Hacksaw",   category: "slots", emoji: "🤠", color: "from-orange-500/30 to-red-700/20",     description: "5×3 Western slot with sticky wilds and free spins.", rows: 3, cols: 5, imageUrl: "/slots/wanted-dead.jpg" },
+  { id: "sugar-rush",         name: "Sugar Rush",         provider: "Pragmatic", category: "slots", emoji: "🧁", color: "from-pink-400/30 to-fuchsia-700/20",  description: "7×7 candy cluster pays with multiplier bombs.", rows: 7, cols: 7, imageUrl: "/slots/sugar-rush.jpg" },
+  { id: "crazy-time",         name: "Crazy Time",         provider: "Evolution", category: "live",  emoji: "🎡", color: "from-fuchsia-500/30 to-purple-700/20", description: "Live money wheel with 4 epic bonus games.", rows: 1, cols: 1, live: true, imageUrl: "/slots/crazy-time.jpg" },
+  { id: "lightning-roulette", name: "Lightning Roulette", provider: "Evolution", category: "live",  emoji: "⚡", color: "from-yellow-500/30 to-amber-700/20",  description: "European roulette with random lightning multipliers up to 500×.", rows: 1, cols: 1, live: true, imageUrl: "/slots/lightning-roulette.jpg" },
+  { id: "dog-house",          name: "Dog House",          provider: "Pragmatic", category: "slots", emoji: "🐶", color: "from-emerald-500/30 to-green-700/20",  description: "5×3 dog-themed slot with paw print wilds and free spins.", rows: 3, cols: 5, imageUrl: "/slots/dog-house.jpg" },
+  { id: "money-train",        name: "Money Train",        provider: "Relax",     category: "slots", emoji: "🚂", color: "from-slate-400/30 to-slate-700/20",   description: "5×4 train slot with Collector, Payer and Sniper symbols.", rows: 4, cols: 5, imageUrl: "/slots/money-train.jpg" },
+  { id: "fruit-party",        name: "Fruit Party",        provider: "Pragmatic", category: "slots", emoji: "🍓", color: "from-red-500/30 to-rose-700/20",       description: "7×7 fruit cluster pays with tumbling reels.", rows: 7, cols: 7, imageUrl: "/slots/fruit-party.jpg" },
+  { id: "wild-west-gold",     name: "Wild West Gold",     provider: "Pragmatic", category: "slots", emoji: "🌵", color: "from-lime-500/30 to-green-700/20",    description: "5×4 western tumbling reels with collector wilds.", rows: 4, cols: 5, imageUrl: "/slots/wild-west-gold.jpg" },
+];
+
+export const SLOT_GAME_MAP: Record<string, SlotGameMeta> = Object.fromEntries(
+  SLOT_GAMES.map((g) => [g.id, g])
 );
 
 // Sportsbook leagues for seeding

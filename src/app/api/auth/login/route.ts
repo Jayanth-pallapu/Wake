@@ -12,6 +12,9 @@ export async function POST(req: NextRequest) {
     const identifier = String(body.identifier || body.email || body.username || "").trim().toLowerCase();
     const password = String(body.password || "");
     if (!identifier || !password) return err("Missing credentials");
+    // Length caps: prevent DoS via scrypt on arbitrarily large strings
+    if (identifier.length > 254 || password.length > 1024) return err("Invalid credentials", 401);
+
 
     const user = await db.user.findFirst({
       where: { OR: [{ email: identifier }, { username: identifier }] },

@@ -206,3 +206,51 @@ model BetFeedCache {
   win       Boolean
   createdAt DateTime @default(now())
 }
+
+model Contest {
+  id           String          @id @default(cuid())
+  tier         Int             // 10 | 50 | 100 | 1000 (entry USD)
+  period       String          // daily | weekly | monthly
+  status       String          @default("open") // open | closed | settled
+  entryFeeRaw  BigInt
+  prizePoolRaw BigInt          @default(0)
+  openAt       DateTime
+  closesAt     DateTime
+  resultsAt    DateTime
+  settledAt    DateTime?
+  entries      ContestEntry[]
+  winners      ContestWinner[]
+  createdAt    DateTime        @default(now())
+
+  @@index([status, resultsAt])
+  @@index([tier, period])
+}
+
+model ContestEntry {
+  id         String   @id @default(cuid())
+  contestId  String
+  contest    Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  userId     String?  // null = bot
+  username   String
+  avatarSeed String?
+  wagerRaw   BigInt   @default(0)
+  rank       Int?
+  enteredAt  DateTime @default(now())
+
+  @@unique([contestId, userId])
+  @@index([contestId, wagerRaw])
+}
+
+model ContestWinner {
+  id        String   @id @default(cuid())
+  contestId String
+  contest   Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  userId    String?
+  username  String
+  rank      Int
+  prizeRaw  BigInt
+  paidOut   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([contestId, rank])
+}

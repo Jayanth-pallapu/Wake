@@ -16,6 +16,8 @@ import { VipView } from "@/components/vip/vip-view";
 import { WalletView } from "@/components/wallet/wallet-view";
 import { LeaderboardView } from "@/components/casino/leaderboard-view";
 import { AffiliateView } from "@/components/casino/affiliate-view";
+import { SlotsView } from "@/components/slots/slots-view";
+import { ContestsView } from "@/components/contests/contests-view";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function Home() {
@@ -85,6 +87,12 @@ function renderView(view: import("@/store/ui").ViewId) {
       return <LeaderboardView />;
     case "affiliate":
       return <AffiliateView />;
+    case "slots":
+      return <SlotsView slotId={(view as any).slotId} />;
+    case "slots-lobby":
+      return <SlotsView slotId={null} />;
+    case "contests":
+      return <ContestsView />;
     default:
       return <CasinoLobby />;
   }

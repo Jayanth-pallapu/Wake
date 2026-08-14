@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronDown, Wallet, Menu, Gift, Trophy, LogOut, User as UserIcon, Zap, Copy } from "lucide-react";
+import { ChevronDown, Wallet, Menu, Gift, Trophy, LogOut, User as UserIcon, Copy } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { useWalletStore } from "@/store/wallet";
 import { useUiStore } from "@/store/ui";
@@ -42,18 +42,19 @@ export function TopBar() {
         onClick={() => setView({ kind: "casino" })}
         className="flex items-center gap-2 px-2 group"
       >
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00e701] to-[#1475e1] flex items-center justify-center font-black text-[#0f212e] text-lg">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00c2ff] to-[#1475e1] flex items-center justify-center font-black text-[#0f212e] text-lg">
           ⚡
         </div>
         <span className="hidden sm:block font-bold text-white text-lg tracking-tight">
-          Stake<span className="text-[#00e701]">Forge</span>
+          Stake<span className="text-[#00c2ff]">Forge</span>
         </span>
       </button>
 
       {/* Center: nav (desktop) */}
       <nav className="hidden md:flex items-center gap-1 ml-4">
-        <NavBtn active={viewKind === "casino"} onClick={() => setView({ kind: "casino" })} icon={<Zap className="w-4 h-4" />} label="Casino" />
-        <NavBtn active={viewKind === "sports"} onClick={() => setView({ kind: "sports" })} icon={<Trophy className="w-4 h-4" />} label="Sports" />
+        <NavBtn active={viewKind === "casino"} onClick={() => setView({ kind: "casino" })} icon={<CasinoIcon />} label="Casino" />
+        <NavBtn active={viewKind === "sports"} onClick={() => setView({ kind: "sports" })} icon={<SportsIcon />} label="Sports" />
+        <NavBtn active={viewKind === "contests"} onClick={() => setView({ kind: "contests" })} icon={<ContestIcon />} label="Contests" />
       </nav>
 
       <div className="flex-1" />
@@ -99,7 +100,7 @@ export function TopBar() {
               <DropdownMenuSeparator className="bg-[#2f4553]" />
               <DropdownMenuItem
                 onClick={() => setView({ kind: "wallet" })}
-                className="cursor-pointer hover:bg-[#213743] text-[#00e701] justify-center"
+                className="cursor-pointer hover:bg-[#213743] text-[#00c2ff] justify-center"
               >
                 <Wallet className="w-4 h-4 mr-2" /> Wallet
               </DropdownMenuItem>
@@ -109,7 +110,7 @@ export function TopBar() {
           {/* Wallet quick button */}
           <Button
             onClick={() => setView({ kind: "wallet" })}
-            className="hidden sm:flex bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold h-9 px-3"
+            className="hidden sm:flex bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold h-9 px-3"
           >
             <Wallet className="w-4 h-4 mr-1" /> Wallet
           </Button>
@@ -204,7 +205,7 @@ export function TopBar() {
           </Button>
           <Button
             onClick={() => setAuthModal(true, "register")}
-            className="bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold h-9 px-4"
+            className="bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold h-9 px-4"
           >
             Register
           </Button>
@@ -227,12 +228,63 @@ function NavBtn({ active, onClick, icon, label }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-        active ? "bg-[#213743] text-white" : "text-[#b1bad3] hover:bg-[#213743] hover:text-white"
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold transition-all duration-150 ${
+        active
+          ? "bg-[#213743] text-white shadow-inner"
+          : "text-[#b1bad3] hover:bg-[#213743] hover:text-white"
       }`}
     >
       {icon}
       {label}
     </button>
+  );
+}
+
+/* Professional Casino icon — playing card / chip hybrid */
+function CasinoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Casino chip outer ring */}
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      {/* Chip notches */}
+      <path d="M12 2 L12 5M12 19 L12 22M2 12 L5 12M19 12 L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      {/* Inner circle */}
+      <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      {/* Card suit — diamond in center */}
+      <path d="M12 8.5 L14.5 12 L12 15.5 L9.5 12 Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+/* Professional Sports icon — football / stadium */
+function SportsIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Trophy cup */}
+      <path d="M6 3h12v8a6 6 0 01-12 0V3z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" fill="none" />
+      {/* Trophy handles */}
+      <path d="M6 6H3.5a2 2 0 000 4H6M18 6h2.5a2 2 0 010 4H18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      {/* Trophy stem */}
+      <path d="M12 17v3M9 20h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Star inside trophy */}
+      <path d="M12 6.5l.9 2.7h2.9l-2.3 1.7.9 2.7L12 12l-2.4 1.6.9-2.7-2.3-1.7h2.9z" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ContestIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Medal circle */}
+      <circle cx="12" cy="14" r="6" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      {/* Medal ribbon left */}
+      <path d="M9 8 L7 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Medal ribbon right */}
+      <path d="M15 8 L17 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Ribbon bar */}
+      <path d="M7 3 L17 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Star inside medal */}
+      <path d="M12 11l.9 2.7h2.9l-2.3 1.7.9 2.7L12 16.5l-2.4 1.6.9-2.7-2.3-1.7h2.9z" fill="currentColor" />
+    </svg>
   );
 }

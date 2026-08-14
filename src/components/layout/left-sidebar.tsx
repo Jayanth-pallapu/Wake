@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, Gift, Wallet, Users, Flame, Dice5, Rocket, Bomb, TrendingUp,
-  CircleDollarSign, Headphones, ChevronLeft, Bot
+  CircleDollarSign, Headphones, ChevronLeft, Bot, Medal
 } from "lucide-react";
 import { useUiStore } from "@/store/ui";
 import { GAMES } from "@/lib/constants";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { kind: "casino" as const, label: "Casino Home", icon: Home },
   { kind: "sports" as const, label: "Sportsbook", icon: Trophy },
+  { kind: "contests" as const, label: "Contests", icon: Medal },
   { kind: "vip" as const, label: "VIP Club", icon: Gift },
   { kind: "wallet" as const, label: "Wallet", icon: Wallet },
   { kind: "leaderboard" as const, label: "Leaderboard", icon: Users },
@@ -60,7 +61,7 @@ export function LeftSidebar() {
                 >
                   <Icon className="w-4 h-4 shrink-0" />
                   <span>{item.label}</span>
-                  {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00e701]" />}
+                  {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00c2ff]" />}
                 </button>
               );
             })}
@@ -101,9 +102,9 @@ export function LeftSidebar() {
           </div>
 
           <div className="p-3 mt-2">
-            <div className="rounded-lg bg-gradient-to-br from-[#1475e1]/20 to-[#00e701]/10 border border-[#2f4553] p-3">
+            <div className="rounded-lg bg-gradient-to-br from-[#1475e1]/20 to-[#00c2ff]/10 border border-[#2f4553] p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Headphones className="w-4 h-4 text-[#00e701]" />
+                <Headphones className="w-4 h-4 text-[#00c2ff]" />
                 <span className="text-sm font-semibold text-white">24/7 Support</span>
               </div>
               <p className="text-[11px] text-[#b1bad3] leading-relaxed">

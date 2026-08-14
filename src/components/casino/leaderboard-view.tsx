@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Trophy, Flame, Medal } from "lucide-react";
 import { GAME_MAP } from "@/lib/constants";
+import { seededUsername } from "@/lib/indian-names";
 
 export function LeaderboardView() {
   const [data, setData] = useState<LeaderboardResponse | null>(null);
@@ -50,11 +51,11 @@ export function LeaderboardView() {
                 >
                   <RankBadge rank={u.rank} />
                   <Avatar className="w-9 h-9 border border-[#2f4553]">
-                    <AvatarImage src={u.avatar || undefined} alt={u.username} />
-                    <AvatarFallback className="bg-[#213743] text-white text-xs">{u.username.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={u.avatar || undefined} alt={seededUsername(i + 100)} />
+                    <AvatarFallback className="bg-[#213743] text-white text-xs">{seededUsername(i + 100).slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-white truncate">{u.username}</div>
+                    <div className="text-sm font-bold text-white truncate">{seededUsername(i + 100)}</div>
                     <div className="text-[10px] text-[#b1bad3]">{u.gamesPlayed.toLocaleString()} games played</div>
                   </div>
                   <div className="text-right">
@@ -81,20 +82,20 @@ export function LeaderboardView() {
                     className="flex items-center gap-3 p-3 hover:bg-[#213743]/50"
                   >
                     <Avatar className="w-9 h-9 border border-[#2f4553]">
-                      <AvatarImage src={w.avatar || undefined} alt={w.username} />
-                      <AvatarFallback className="bg-[#213743] text-white text-xs">{w.username.slice(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarImage src={w.avatar || undefined} alt={seededUsername(i + 200)} />
+                      <AvatarFallback className="bg-[#213743] text-white text-xs">{seededUsername(i + 200).slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-bold text-white truncate">{w.username}</div>
+                      <div className="text-sm font-bold text-white truncate">{seededUsername(i + 200)}</div>
                       <div className="text-[10px] text-[#b1bad3]">
                         <span>{meta?.emoji} {w.game}</span> · {w.bet.toFixed(2)} {w.asset}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`text-sm font-bold tabular-nums ${w.multiplier >= 10 ? "text-[#ff5cb1]" : "text-[#00e701]"}`}>
+                      <div className={`text-sm font-bold tabular-nums ${w.multiplier >= 10 ? "text-[#ff5cb1]" : "text-[#00c2ff]"}`}>
                         {w.multiplier.toFixed(2)}×
                       </div>
-                      <div className="text-[10px] text-[#00e701]">+{w.payout.toFixed(2)} {w.asset}</div>
+                      <div className="text-[10px] text-[#00c2ff]">+{w.payout.toFixed(2)} {w.asset}</div>
                     </div>
                   </motion.div>
                 );
@@ -108,7 +109,7 @@ export function LeaderboardView() {
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  const color = rank === 1 ? "bg-[#ffd23f] text-[#0a1f12]" : rank === 2 ? "bg-[#b1bad3] text-[#0a1f12]" : rank === 3 ? "bg-[#cd7f32] text-white" : "bg-[#213743] text-[#b1bad3]";
+  const color = rank === 1 ? "bg-[#ffd23f] text-[#001a2e]" : rank === 2 ? "bg-[#b1bad3] text-[#001a2e]" : rank === 3 ? "bg-[#cd7f32] text-white" : "bg-[#213743] text-[#b1bad3]";
   return (
     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black ${color}`}>
       {rank}

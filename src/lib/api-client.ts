@@ -30,9 +30,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     body = text;
   }
   if (!res.ok) {
-    const msg =
-      (body && typeof body === "object" && "error" in body && String((body as Record<string, unknown>).error)) ||
-      `Request failed (${res.status})`;
+    const errBody = (body && typeof body === "object" && "error" in body)
+      ? String((body as Record<string, unknown>).error)
+      : undefined;
+    const msg = errBody || `Request failed (${res.status})`;
     throw new ApiError(msg, res.status, body);
   }
   return body as T;

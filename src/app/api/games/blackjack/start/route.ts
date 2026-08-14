@@ -56,10 +56,13 @@ export async function POST(req: NextRequest) {
     const natural = deal.playerTotal === 21;
     let balanceAfterRaw = result.balanceAfterRaw;
 
+    // Build proper hand shapes: [{rank, suit}]
+    const playerHand = deal.playerCards.map((c: any) => ({ rank: c.rank, suit: c.suit }));
+    const dealerHand = deal.dealerCards.map((c: any) => ({ rank: c.rank, suit: c.suit }));
+    const dealerVisibleTotal = deal.dealerVisible ?? (dealerHand.length > 0 ? 0 : 0);
+
     if (natural) {
-      // Natural blackjack pays 1.5x (so payout is 2.5x total bet back? Standard is 3:2, meaning win 1.5x, total return 2.5x bet)
-      // The instructions say "if so auto-win 1.5x, settle immediately". 
-      // This means payoutRaw = (betRaw * 25n) / 10n (2.5x)
+      // Natural blackjack: 3:2 payout — total return is 2.5× bet
       const payoutRaw = (betRaw * 25n) / 10n;
       const txResult = await db.$transaction(async (tx) => {
         let wallet = await tx.wallet.findUnique({ where: { userId_asset: { userId: user.id, asset } } });
@@ -83,19 +86,22 @@ export async function POST(req: NextRequest) {
         return { balanceAfterRaw: b };
       });
       balanceAfterRaw = txResult.balanceAfterRaw;
-      
+
       recomputeVip(user.id).catch(() => {});
-      
+
       return json({
         ok: true,
         gameId: null,
-        playerCards: deal.playerCards,
-        dealerVisibleCard: deal.dealerCards[0],
+        playerHand,
+        dealerHand,
         playerTotal: deal.playerTotal,
-        dealerVisible: deal.dealerVisible,
+        dealerTotal: dealerVisibleTotal,
+        result: "BLACKJACK WIN",
+        status: "ended",
+        win: true,
+        payout: (Number(payoutRaw) / 1e8).toFixed(6),
         balanceAfterRaw: balanceAfterRaw.toString(),
         balanceAfter: Number(balanceAfterRaw) / 1e8,
-        naturalBlackjack: true,
       });
     }
 
@@ -113,13 +119,16 @@ export async function POST(req: NextRequest) {
     return json({
       ok: true,
       gameId,
-      playerCards: deal.playerCards,
-      dealerVisibleCard: deal.dealerCards[0],
+      playerHand,
+      dealerHand,
       playerTotal: deal.playerTotal,
-      dealerVisible: deal.dealerVisible,
+      dealerTotal: dealerVisibleTotal,
+      result: null,
+      status: "playing",
+      win: false,
+      payout: null,
       balanceAfterRaw: balanceAfterRaw.toString(),
       balanceAfter: Number(balanceAfterRaw) / 1e8,
-      naturalBlackjack: false,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Start failed";

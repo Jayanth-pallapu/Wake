@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   if (!user) return err("UNAUTHORIZED", 401);
   const body = await req.json().catch(() => ({}));
   const { gameId, action } = body;
-  
+
   if (!gameId || typeof gameId !== "string") return err("Invalid gameId");
   if (!["hit", "stand", "double"].includes(action)) return err("Invalid action");
 
@@ -28,6 +28,9 @@ export async function POST(req: NextRequest) {
     return err("Invalid game state");
   }
 
+  // Helper to normalize a card array to {rank, suit} shape
+  const toHand = (cards: any[]) => cards.map((c: any) => ({ rank: c.rank, suit: c.suit }));
+
   try {
     let playerCards = [...bjPlayerCards];
     let drawPos = bjDrawPos;
@@ -35,16 +38,12 @@ export async function POST(req: NextRequest) {
     let isBust = false;
 
     if (action === "hit" || action === "double") {
-      // For double, we just note it but skip actual debiting to keep simple as requested.
-      // So betRaw remains the same, but payout logic uses 2x betRaw? Wait. 
-      // User instruction: "double the original bet (but since bet was already debited, just note it - skip actual doubling to keep simple), then auto-stand".
-      // Let's actually double the effective betRaw for payout calculation but not debit again, as per instruction to "keep simple".
       if (action === "double") betRaw = betRaw * 2n;
 
       const drawn = blackjackDraw(serverSeed, clientSeed, nonce, 1, drawPos);
       playerCards.push(drawn[0]);
       drawPos++;
-      
+
       const pTotal = bjHandTotal(playerCards);
       if (pTotal > 21) isBust = true;
       if (action === "double" && !isBust) autoStand = true;
@@ -52,12 +51,13 @@ export async function POST(req: NextRequest) {
 
     if (isBust) {
       const pTotal = bjHandTotal(playerCards);
+      const dTotal = bjHandTotal(bjDealerCards);
       const result = await db.$transaction(async (tx) => {
         let wallet = await tx.wallet.findUnique({ where: { userId_asset: { userId: user.id, asset } } });
         if (!wallet) wallet = await tx.wallet.create({ data: { userId: user.id, asset, balance: 0n } });
         await tx.gameBet.create({
           data: {
-            userId: user.id, game: "blackjack", asset, betAmountRaw: game.betRaw, // record original betRaw
+            userId: user.id, game: "blackjack", asset, betAmountRaw: game.betRaw,
             payoutRaw: 0n, multiplier: 0,
             outcome: JSON.stringify({ action, playerCards, pTotal, bust: true }),
             win: false, serverSeed, clientSeed, nonce,
@@ -68,20 +68,37 @@ export async function POST(req: NextRequest) {
       await deleteGame(gameId, user.id, "blackjack");
       recomputeVip(user.id).catch(() => {});
       return json({
-        ok: true, action, playerCards, playerTotal: pTotal, bust: true,
+        ok: true,
+        status: "ended",
+        result: "PLAYER BUST",
+        win: false,
+        payout: null,
+        playerHand: toHand(playerCards),
+        dealerHand: toHand(bjDealerCards),
+        playerTotal: pTotal,
+        dealerTotal: dTotal,
         balanceAfterRaw: result.balanceAfterRaw.toString(),
         balanceAfter: Number(result.balanceAfterRaw) / 1e8,
       });
     }
 
+    // Hit (not bust, not auto-stand) — return playing state
     if (action === "hit" && !autoStand) {
       await updateGame(gameId, { bjPlayerCards: playerCards, bjDrawPos: drawPos });
       return json({
-        ok: true, action, playerCards, playerTotal: bjHandTotal(playerCards), bust: false,
+        ok: true,
+        status: "playing",
+        result: null,
+        win: false,
+        payout: null,
+        playerHand: toHand(playerCards),
+        dealerHand: toHand(bjDealerCards), // still hidden second card on client
+        playerTotal: bjHandTotal(playerCards),
+        dealerTotal: bjHandTotal([bjDealerCards[0]]), // only first card visible
       });
     }
 
-    // Stand or auto-stand after double
+    // Stand or auto-stand after double — dealer plays
     let dealerCards = [...bjDealerCards];
     let dTotal = bjHandTotal(dealerCards);
     while (dTotal < 17) {
@@ -93,30 +110,35 @@ export async function POST(req: NextRequest) {
 
     const pTotal = bjHandTotal(playerCards);
     let gameResult: "win" | "lose" | "push" = "lose";
-    if (pTotal > dTotal || dTotal > 21) gameResult = "win";
+    const dealerBust = dTotal > 21;
+    if (pTotal > dTotal || dealerBust) gameResult = "win";
     else if (pTotal === dTotal) gameResult = "push";
 
     let payoutRaw = 0n;
     if (gameResult === "win") payoutRaw = betRaw * 2n;
     else if (gameResult === "push") payoutRaw = betRaw;
 
+    // For double the effective betRaw was doubled but original bet was already deducted.
+    // If double and win, credit the extra win (betRaw is already 2x here, so payoutRaw = 2*2x = 4x original,
+    // but we should only return betRaw*2 based on the doubled bet, which is correct since betRaw was doubled).
+
     const txResult = await db.$transaction(async (tx) => {
       let wallet = await tx.wallet.findUnique({ where: { userId_asset: { userId: user.id, asset } } });
       if (!wallet) wallet = await tx.wallet.create({ data: { userId: user.id, asset, balance: 0n } });
       let balanceAfterRaw = wallet.balance;
-      
+
       if (payoutRaw > 0n) {
         balanceAfterRaw += payoutRaw;
         await tx.wallet.update({ where: { id: wallet.id }, data: { balance: balanceAfterRaw } });
         await tx.walletLedger.create({
           data: {
             userId: user.id, asset, amountRaw: payoutRaw, balanceAfterRaw,
-            transactionType: gameResult === "win" ? "WIN" : "REFUND", 
+            transactionType: gameResult === "win" ? "WIN" : "REFUND",
             note: `Blackjack ${gameResult}`,
           },
         });
       }
-      
+
       await tx.gameBet.create({
         data: {
           userId: user.id, game: "blackjack", asset, betAmountRaw: game.betRaw,
@@ -131,6 +153,12 @@ export async function POST(req: NextRequest) {
     await deleteGame(gameId, user.id, "blackjack");
     recomputeVip(user.id).catch(() => {});
 
+    // Build result string for frontend
+    let resultStr: string;
+    if (gameResult === "win") resultStr = dealerBust ? "DEALER BUST WIN" : "WIN";
+    else if (gameResult === "push") resultStr = "PUSH";
+    else resultStr = "LOSE";
+
     if (gameResult === "win") {
       pushChatNotify("win", {
         username: user.username,
@@ -143,11 +171,15 @@ export async function POST(req: NextRequest) {
     }
 
     return json({
-      ok: true, action,
-      playerCards, dealerCards,
-      playerTotal: pTotal, dealerTotal: dTotal,
-      result: gameResult,
-      payout: Number(payoutRaw) / 1e8,
+      ok: true,
+      status: "ended",
+      result: resultStr,
+      win: gameResult === "win",
+      payout: (Number(payoutRaw) / 1e8).toFixed(6),
+      playerHand: toHand(playerCards),
+      dealerHand: toHand(dealerCards),
+      playerTotal: pTotal,
+      dealerTotal: dTotal,
       balanceAfterRaw: txResult.balanceAfterRaw.toString(),
       balanceAfter: Number(txResult.balanceAfterRaw) / 1e8,
     });

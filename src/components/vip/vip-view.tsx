@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -96,7 +96,7 @@ export function VipView() {
               <div className="text-[10px] uppercase tracking-wider text-white/70 font-bold">Rakeback Pending</div>
               <div className="text-2xl font-black text-white tabular-nums">{totalPending.toFixed(4)}</div>
               <div className="text-xs text-white/80">USDT</div>
-              <Button onClick={claim} disabled={claiming} size="sm" className="mt-2 bg-white text-[#0a1f12] hover:bg-white/90 font-bold h-8">
+              <Button onClick={claim} disabled={claiming} size="sm" className="mt-2 bg-white text-[#001a2e] hover:bg-white/90 font-bold h-8">
                 {claiming ? <Loader2 className="w-3 h-3 animate-spin" /> : <Gift className="w-3 h-3 mr-1" />} Claim All
               </Button>
             </div>
@@ -118,12 +118,12 @@ export function VipView() {
 
       {/* Rakeback breakdown */}
       <Card className="bg-[#1a2c38] border-[#2f4553] p-4 mb-4">
-        <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2"><Zap className="w-4 h-4 text-[#00e701]" /> Rakeback by Asset</h2>
+        <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2"><Zap className="w-4 h-4 text-[#00c2ff]" /> Rakeback by Asset</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {status.rakebacks.filter((r) => r.pending > 0).map((r) => (
             <div key={r.asset} className="bg-[#0f212e] rounded-md p-2">
               <div className="text-[10px] text-[#b1bad3]">{r.asset}</div>
-              <div className="text-sm font-bold text-[#00e701] tabular-nums">{r.pending.toFixed(6)}</div>
+              <div className="text-sm font-bold text-[#00c2ff] tabular-nums">{r.pending.toFixed(6)}</div>
               <div className="text-[9px] text-[#b1bad3]">{Math.round(r.rakebackPct * 100)}% rate</div>
             </div>
           ))}

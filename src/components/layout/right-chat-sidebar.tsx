@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { seededUsername, randomIndianUsername } from "@/lib/indian-names";
 
 export function RightChatSidebar() {
   const [tab, setTab] = useState<"chat" | "bets">("chat");
@@ -57,9 +58,9 @@ export function RightChatSidebar() {
       const data = await res.json();
       if (res.ok) {
         toast.success(`🌧️ Claimed ${data.amount} ${data.asset}!`);
-        // refresh wallet
-        const { refresh } = await import("@/store/wallet");
-        refresh();
+        // refresh wallet using Zustand store method
+        const { useWalletStore } = await import("@/store/wallet");
+        await useWalletStore.getState().refresh();
       } else {
         toast.error(data.error || "Rain claim failed");
       }
@@ -92,7 +93,7 @@ export function RightChatSidebar() {
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="m-2 p-3 rounded-lg bg-gradient-to-r from-[#1475e1] to-[#00e701] text-[#0a1f12]"
+              className="m-2 p-3 rounded-lg bg-gradient-to-r from-[#1475e1] to-[#00c2ff] text-[#001a2e]"
             >
               <div className="flex items-center gap-2 mb-1">
                 <Gift className="w-4 h-4" />
@@ -134,7 +135,7 @@ export function RightChatSidebar() {
                     <Button
                       onClick={handleSend}
                       size="icon"
-                      className="bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] h-9 w-9 shrink-0"
+                      className="bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] h-9 w-9 shrink-0"
                     >
                       <Send className="w-4 h-4" />
                     </Button>
@@ -159,17 +160,17 @@ export function RightChatSidebar() {
                   key={b.id}
                   className="flex items-center gap-2 p-2 rounded-md bg-[#1a2c38] hover:bg-[#213743] transition-colors"
                 >
-                  <Trophy className={cn("w-3.5 h-3.5 shrink-0", b.multiplier >= 2 ? "text-[#00e701]" : "text-[#b1bad3]")} />
+                  <Trophy className={cn("w-3.5 h-3.5 shrink-0", b.multiplier >= 2 ? "text-[#00c2ff]" : "text-[#b1bad3]")} />
                   <div className="flex-1 min-w-0">
                     <div className="text-xs text-white truncate">
-                      <span className="font-semibold">{b.username}</span>
+                      <span className="font-semibold">{b.username.startsWith("bot_") || b.username.startsWith("Guest_") ? seededUsername(b.username.charCodeAt(0) + b.username.length) : b.username}</span>
                       <span className="text-[#b1bad3]"> · {b.game}</span>
                     </div>
                     <div className="text-[10px] text-[#b1bad3]">
                       {b.bet.toFixed(2)} {b.asset} → {b.payout.toFixed(2)} {b.asset}
                     </div>
                   </div>
-                  <div className={cn("text-sm font-bold tabular-nums", b.multiplier >= 2 ? "text-[#00e701]" : "text-[#b1bad3]")}>
+                  <div className={cn("text-sm font-bold tabular-nums", b.multiplier >= 2 ? "text-[#00c2ff]" : "text-[#b1bad3]")}>
                     {b.multiplier.toFixed(2)}x
                   </div>
                 </div>
@@ -189,7 +190,7 @@ function TabBtn({ active, onClick, icon, label, badge }: { active: boolean; onCl
       className={cn(
         "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors",
         active
-          ? "border-[#00e701] text-white"
+          ? "border-[#00c2ff] text-white"
           : "border-transparent text-[#b1bad3] hover:text-white"
       )}
     >
@@ -214,17 +215,18 @@ function ChatLine({ message }: { message: import("@/store/chat").ChatMessage }) 
       </div>
     );
   }
+  const dName = message.username.startsWith("bot_") || message.username.startsWith("Guest_") ? seededUsername(message.username.charCodeAt(0) + message.username.length) : message.username;
   return (
     <div className="flex gap-2 p-1.5 rounded hover:bg-[#1a2c38]/50 transition-colors group">
       <Avatar className="w-6 h-6 shrink-0 border border-[#2f4553]">
-        <AvatarImage src={message.avatar || undefined} alt={message.username} />
+        <AvatarImage src={message.avatar || undefined} alt={dName} />
         <AvatarFallback className="bg-[#213743] text-white text-[10px]">
-          {message.username.slice(0, 2).toUpperCase()}
+          {dName.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs font-semibold text-white truncate">{message.username}</span>
+          <span className="text-xs font-semibold text-white truncate">{dName}</span>
           {message.role === "mod" && (
             <span className="text-[9px] px-1 rounded bg-[#1475e1] text-white">MOD</span>
           )}

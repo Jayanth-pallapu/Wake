@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -73,7 +73,7 @@ export function WalletView() {
   return (
     <div className="p-3 sm:p-5 max-w-[1200px] mx-auto">
       <div className="flex items-center gap-2 mb-4">
-        <Wallet className="w-5 h-5 text-[#00e701]" />
+        <Wallet className="w-5 h-5 text-[#00c2ff]" />
         <h1 className="text-xl font-bold text-white">Wallet</h1>
       </div>
 
@@ -91,7 +91,7 @@ export function WalletView() {
         </Card>
         <Card className="bg-[#1a2c38] border-[#2f4553] p-4">
           <div className="text-[10px] uppercase tracking-wider text-[#b1bad3]">Games Played</div>
-          <div className="text-2xl font-black text-[#00e701] tabular-nums">{user?.gamesPlayed || 0}</div>
+          <div className="text-2xl font-black text-[#00c2ff] tabular-nums">{user?.gamesPlayed || 0}</div>
           <div className="text-[10px] text-[#b1bad3]">all-time</div>
         </Card>
       </div>
@@ -161,13 +161,13 @@ export function WalletView() {
                 <div className="bg-[#0f212e] rounded-md p-2 text-[10px] text-[#b1bad3]">
                   <div className="flex items-center gap-1 mb-1">
                     <span className="font-semibold text-white">Demo deposit address:</span>
-                    <button onClick={() => { navigator.clipboard.writeText(`demo_${activeAsset.toLowerCase()}_${user?.id?.slice(0,8)}`); toast.success("Copied"); }} className="text-[#00e701]">
+                    <button onClick={() => { navigator.clipboard.writeText(`demo_${activeAsset.toLowerCase()}_${user?.id?.slice(0,8)}`); toast.success("Copied"); }} className="text-[#00c2ff]">
                       <Copy className="w-3 h-3" />
                     </button>
                   </div>
                   <code className="text-[#dfe5ee] break-all">demo_{activeAsset.toLowerCase()}_{user?.id?.slice(0, 8) || "guest"}</code>
                 </div>
-                <Button onClick={deposit} disabled={busy || depositAmount <= 0} className="w-full bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold h-10">
+                <Button onClick={deposit} disabled={busy || depositAmount <= 0} className="w-full bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold h-10">
                   {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : `Deposit ${depositAmount} ${activeAsset}`}
                 </Button>
                 <p className="text-[9px] text-center text-[#55657a]">Instant demo credit · no blockchain</p>
@@ -194,7 +194,7 @@ export function WalletView() {
                 <div className="bg-[#0f212e] rounded-md p-2 text-[10px] text-[#b1bad3]">
                   Withdrawals ≤ $2,000 USD: auto-approved. Larger: manual review.
                 </div>
-                <Button onClick={withdraw} disabled={busy || withdrawAmount <= 0 || !withdrawAddress} className="w-full bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold h-10">
+                <Button onClick={withdraw} disabled={busy || withdrawAmount <= 0 || !withdrawAddress} className="w-full bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold h-10">
                   {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : `Withdraw ${withdrawAmount} ${activeAsset}`}
                 </Button>
               </Card>
@@ -213,7 +213,7 @@ export function WalletView() {
                           <div className="text-[10px] text-[#b1bad3]">{new Date(e.createdAt).toLocaleString()}</div>
                         </div>
                         <div className="text-right">
-                          <div className={`text-xs font-bold tabular-nums ${e.amount >= 0 ? "text-[#00e701]" : "text-[#ff5c5c]"}`}>
+                          <div className={`text-xs font-bold tabular-nums ${e.amount >= 0 ? "text-[#00c2ff]" : "text-[#ff5c5c]"}`}>
                             {e.amount >= 0 ? "+" : ""}{e.amount.toFixed(6)} {e.asset}
                           </div>
                           <div className="text-[10px] text-[#b1bad3]">bal: {e.balanceAfter.toFixed(4)}</div>

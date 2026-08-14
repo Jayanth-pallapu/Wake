@@ -1,7 +1,9 @@
-// Server-side helper to push real events into the chat Socket.io mini-service (port 3003).
-// Server-to-server localhost call — NOT subject to the browser gateway rule.
+// Server-side helper to push real events into the chat Socket.io mini-service.
+// Server-to-server call — NOT subject to browser gateway rules.
+// CHAT_SERVICE_URL: set to the production URL of your chat service in env vars.
 
-const CHAT_SERVICE_URL = "http://localhost:3003";
+const CHAT_SERVICE_URL = process.env.CHAT_SERVICE_URL ?? "http://localhost:3003";
+
 
 export async function pushChatNotify(
   event: "tip" | "win" | "mega" | "rain" | "system",

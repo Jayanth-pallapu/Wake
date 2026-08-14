@@ -11,7 +11,7 @@ import { useUiStore } from "@/store/ui";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "sonner";
 import { SPORTS } from "@/lib/constants";
-import { Activity, Trash2, X, Check } from "lucide-react";
+import { Trash2, X, Check } from "lucide-react";
 
 const SPORT_ICONS: Record<string, string> = {
   football: "⚽", basketball: "🏀", tennis: "🎾", esports: "🎮", mma: "🥊",
@@ -69,7 +69,6 @@ export function SportsbookView() {
   return (
     <div className="p-3 sm:p-5 max-w-[1400px] mx-auto">
       <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-5 h-5 text-[#00e701]" />
         <h1 className="text-xl font-bold text-white">Sportsbook</h1>
         <span className="text-xs text-[#b1bad3]">Live odds · updates every 5s</span>
       </div>
@@ -125,16 +124,16 @@ export function SportsbookView() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-white">{m.homeTeam}</span>
-                      {m.status === "live" && <span className="text-xs font-bold text-[#00e701] tabular-nums">{m.scoreHome}</span>}
+                      {m.status === "live" && <span className="text-xs font-bold text-[#00c2ff] tabular-nums">{m.scoreHome}</span>}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-white">{m.awayTeam}</span>
-                      {m.status === "live" && <span className="text-xs font-bold text-[#00e701] tabular-nums">{m.scoreAway}</span>}
+                      {m.status === "live" && <span className="text-xs font-bold text-[#00c2ff] tabular-nums">{m.scoreAway}</span>}
                     </div>
                   </div>
                   <OddsBtn label="1" odds={m.odds.home} active={betSlip.some((b) => b.id === m.matchId + "-home")} onClick={() => addBetSlip({ id: m.matchId + "-home", matchId: m.matchId, label: `${m.homeTeam} to win`, odds: m.odds.home, market: "home" })} />
                   {m.odds.draw !== null ? (
-                    <OddsBtn label="X" odds={m.odds.draw} active={betSlip.some((b) => b.id === m.matchId + "-draw")} onClick={() => addBetSlip({ id: m.matchId + "-draw", matchId: m.matchId, label: `${m.homeTeam} vs ${m.awayTeam} — Draw`, odds: m.odds.draw, market: "draw" })} />
+                    <OddsBtn label="X" odds={m.odds.draw!} active={betSlip.some((b) => b.id === m.matchId + "-draw")} onClick={() => addBetSlip({ id: m.matchId + "-draw", matchId: m.matchId, label: `${m.homeTeam} vs ${m.awayTeam} — Draw`, odds: m.odds.draw!, market: "draw" })} />
                   ) : (
                     <div className="w-16" />
                   )}
@@ -164,7 +163,7 @@ export function SportsbookView() {
               ) : (
                 betSlip.map((b) => (
                   <div key={b.id} className="bg-[#0f212e] rounded-md p-2 flex items-start gap-2">
-                    <Check className="w-3 h-3 text-[#00e701] mt-0.5 shrink-0" />
+                    <Check className="w-3 h-3 text-[#00c2ff] mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs text-white truncate">{b.label}</div>
                       <div className="text-[10px] text-[#b1bad3]">@ {b.odds.toFixed(2)}</div>
@@ -184,7 +183,7 @@ export function SportsbookView() {
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[#b1bad3]">Total odds</span>
-                  <span className="text-[#00e701] font-bold tabular-nums">{odds.toFixed(2)}×</span>
+                  <span className="text-[#00c2ff] font-bold tabular-nums">{odds.toFixed(2)}×</span>
                 </div>
                 <div>
                   <label className="text-[10px] uppercase tracking-wider text-[#b1bad3]">Stake (USDT)</label>
@@ -192,9 +191,9 @@ export function SportsbookView() {
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[#b1bad3]">Potential payout</span>
-                  <span className="text-[#00e701] font-bold tabular-nums">{payout.toFixed(2)} USDT</span>
+                  <span className="text-[#00c2ff] font-bold tabular-nums">{payout.toFixed(2)} USDT</span>
                 </div>
-                <Button onClick={placeBet} disabled={placing || stake <= 0} className="w-full bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold h-10">
+                <Button onClick={placeBet} disabled={placing || stake <= 0} className="w-full bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold h-10">
                   {placing ? "Placing…" : `Place Bet · ${stake} USDT`}
                 </Button>
                 <p className="text-[9px] text-center text-[#55657a]">Demo bet — no real settlement</p>
@@ -212,7 +211,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
     <button
       onClick={onClick}
       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize ${
-        active ? "bg-[#00e701] text-[#0a1f12]" : "bg-[#1a2c38] text-[#b1bad3] hover:bg-[#213743] hover:text-white"
+        active ? "bg-[#00c2ff] text-[#001a2e]" : "bg-[#1a2c38] text-[#b1bad3] hover:bg-[#213743] hover:text-white"
       }`}
     >
       {children}
@@ -225,7 +224,7 @@ function OddsBtn({ label, odds, active, onClick }: { label: string; odds: number
     <button
       onClick={onClick}
       className={`w-16 py-2 rounded-md text-center transition-all ${
-        active ? "bg-[#00e701] text-[#0a1f12]" : "bg-[#0f212e] hover:bg-[#213743] text-white border border-[#2f4553]"
+        active ? "bg-[#00c2ff] text-[#001a2e]" : "bg-[#0f212e] hover:bg-[#213743] text-white border border-[#2f4553]"
       }`}
     >
       <div className="text-[9px] text-[#b1bad3] uppercase">{label}</div>

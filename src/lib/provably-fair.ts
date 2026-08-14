@@ -146,7 +146,8 @@ export function plinkoPath(
 ): { directions: number[]; bucket: number; multiplier: number; risk?: PlinkoRisk } {
   const floats = resultFloats(serverSeed, clientSeed, nonce, rows);
   const directions = floats.map((f) => (f < 0.5 ? 0 : 1));
-  const bucket = directions.reduce((sum, d) => sum + d, 0); // 0..rows
+  let bucket = 0;
+  for (const d of directions) { if (d) bucket++; } // count right-turns: 0..rows
   return { directions, bucket, multiplier: 0, risk: undefined };
 }
 
@@ -368,17 +369,17 @@ export function verifyBet(input: VerificationInput): VerificationResult {
       break;
     case "dragontiger": {
       const deal = dragonTigerDeal(serverSeed, clientSeed, nonce);
-      outcome = deal;
+      outcome = { ...deal };
       break;
     }
     case "baccarat": {
       const deal = baccaratDeal(serverSeed, clientSeed, nonce);
-      outcome = deal;
+      outcome = { ...deal };
       break;
     }
     case "blackjack": {
       const deal = blackjackDeal(serverSeed, clientSeed, nonce);
-      outcome = deal;
+      outcome = { ...deal };
       break;
     }
     case "videopoker": {
@@ -398,7 +399,7 @@ export function verifyBet(input: VerificationInput): VerificationResult {
       break;
     }
     case "cave": {
-      const col = (params?.column as number) || 0;
+      const col = ((params?.column as number) || 0) as Parameters<typeof cavePlunderDraw>[3];
       outcome = cavePlunderDraw(serverSeed, clientSeed, nonce, col);
       break;
     }

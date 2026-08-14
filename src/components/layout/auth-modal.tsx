@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -60,7 +60,7 @@ export function AuthModal() {
       <DialogContent className="bg-[#1a2c38] border-[#2f4553] text-white max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#00e701] to-[#1475e1] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#00c2ff] to-[#1475e1] flex items-center justify-center">
               <Zap className="w-5 h-5 text-[#0f212e]" />
             </div>
             <div>
@@ -148,7 +148,7 @@ export function AuthModal() {
           <Button
             onClick={submit}
             disabled={loading}
-            className="w-full bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold h-10"
+            className="w-full bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold h-10"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : effectiveMode === "register" ? "Create account" : "Log in"}
           </Button>

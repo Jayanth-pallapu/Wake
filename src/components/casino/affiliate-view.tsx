@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export function AffiliateView() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         <Card className="bg-[#1a2c38] border-[#2f4553] p-4">
-          <TrendingUp className="w-5 h-5 text-[#00e701] mb-2" />
+          <TrendingUp className="w-5 h-5 text-[#00c2ff] mb-2" />
           <div className="text-2xl font-black text-white tabular-nums">$0.00</div>
           <div className="text-[10px] text-[#b1bad3]">Lifetime commission</div>
         </Card>
@@ -48,7 +48,7 @@ export function AffiliateView() {
               navigator.clipboard.writeText(`https://stakeforge.demo/r/${refCode}`);
               toast.success("Referral link copied!");
             }}
-            className="bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold"
+            className="bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold"
           >
             <Copy className="w-4 h-4 mr-1" /> Copy
           </Button>

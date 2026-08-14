@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useUiStore } from "@/store/ui";
 import { useWalletStore } from "@/store/wallet";
 import { ASSETS } from "@/lib/constants";
@@ -102,13 +102,44 @@ export function BetPanel({ bet, setBet, onBet, playing, betLabel = "Bet", disabl
       </div>
 
       {/* Bet button */}
-      <Button
+      <button
         onClick={onBet}
         disabled={playing || disabled || bet <= 0}
-        className="w-full bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-black h-12 text-base disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-transform"
+        className="btn-shimmer-sweep w-full text-white font-black h-12 text-base rounded-lg disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] transition-transform relative overflow-hidden"
+        style={{
+          background: playing || disabled || bet <= 0
+            ? "#1a2c38"
+            : "linear-gradient(135deg, #00c2ff 0%, #0055cc 40%, #7c3aed 80%, #ff5cb1 100%)",
+          boxShadow: playing || disabled || bet <= 0
+            ? "none"
+            : "0 0 20px rgba(0,194,255,0.35), 0 4px 16px rgba(124,58,237,0.3)",
+          border: "none",
+          fontFamily: "'Orbitron', monospace",
+          letterSpacing: 1.5,
+          transition: "box-shadow 0.3s, transform 0.15s",
+        }}
+        onMouseEnter={(e) => {
+          if (!(playing || disabled || bet <= 0)) {
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 35px rgba(0,194,255,0.55), 0 6px 24px rgba(124,58,237,0.5)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = playing || disabled || bet <= 0
+            ? "none"
+            : "0 0 20px rgba(0,194,255,0.35), 0 4px 16px rgba(124,58,237,0.3)";
+        }}
       >
-        {playing ? <Loader2 className="w-5 h-5 animate-spin" /> : betLabel}
-      </Button>
+        {playing ? (
+          <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83">
+                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+              </path>
+            </svg>
+            {betLabel}
+          </span>
+        ) : betLabel}
+      </button>
     </div>
   );
 }
@@ -117,7 +148,26 @@ function QuickBtn({ onClick, children }: { onClick: () => void; children: React.
   return (
     <button
       onClick={onClick}
-      className="px-1.5 py-1 text-[10px] font-bold rounded bg-[#213743] hover:bg-[#2f4553] text-[#b1bad3] hover:text-white transition-colors"
+      className="px-1.5 py-1 text-[10px] font-bold rounded transition-all duration-200"
+      style={{
+        background: "rgba(33,55,67,0.8)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        border: "1px solid rgba(47,69,83,0.8)",
+        color: "#b1bad3",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = "rgba(47,69,83,0.9)";
+        (e.currentTarget as HTMLButtonElement).style.color = "#ffffff";
+        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,194,255,0.4)";
+        (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 8px rgba(0,194,255,0.2)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = "rgba(33,55,67,0.8)";
+        (e.currentTarget as HTMLButtonElement).style.color = "#b1bad3";
+        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(47,69,83,0.8)";
+        (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+      }}
     >
       {children}
     </button>

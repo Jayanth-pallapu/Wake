@@ -12,10 +12,14 @@ export async function POST(req: NextRequest) {
     const username = String(body.username || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
+    // Length caps: prevent DoS via scrypt on huge strings
+    if (username.length > 32 || email.length > 254 || password.length > 1024) return err("Invalid input");
     if (!username || username.length < 3) return err("Username must be at least 3 characters");
+    if (username.length > 32) return err("Username must be 32 characters or fewer");
     if (!/^[a-zA-Z0-9_]+$/.test(username)) return err("Username can only contain letters, numbers, underscores");
     if (!email || !/.+@.+\..+/.test(email)) return err("Invalid email");
-    if (password.length < 6) return err("Password must be at least 6 characters");
+    if (password.length < 8) return err("Password must be at least 8 characters");
+
 
     const exists = await db.user.findFirst({
       where: { OR: [{ username }, { email }] },

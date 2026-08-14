@@ -1,14 +1,15 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, History, RefreshCw, ChevronLeft } from "lucide-react";
+import { ShieldCheck, History, RefreshCw, ChevronLeft, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/store/ui";
 import { GAMES } from "@/lib/constants";
 import { api, type SeedInfo } from "@/lib/api-client";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "sonner";
+import { useFullscreen } from "@/hooks/use-fullscreen";
 
 interface GameShellProps {
   gameId: string;
@@ -23,6 +24,7 @@ export function GameShell({ gameId, children, history }: GameShellProps) {
   const [seeds, setSeeds] = useState<SeedInfo | null>(null);
   const [showFair, setShowFair] = useState(false);
   const [rotating, setRotating] = useState(false);
+  const { ref: fsRef, isFullscreen, toggleFullscreen } = useFullscreen();
 
   const loadSeeds = async () => {
     if (!user) return;
@@ -50,8 +52,9 @@ export function GameShell({ gameId, children, history }: GameShellProps) {
   };
 
   return (
-    <div className="p-3 sm:p-5 max-w-[1400px] mx-auto">
-      <button
+    <div ref={fsRef as any} className={isFullscreen ? "bg-[#0f212e] overflow-auto p-4 w-full h-full" : ""}>
+      <div className="p-3 sm:p-5 max-w-[1400px] mx-auto">
+        <button
         onClick={() => setView({ kind: "casino" })}
         className="flex items-center gap-1 text-xs text-[#b1bad3] hover:text-white mb-3"
       >
@@ -65,17 +68,22 @@ export function GameShell({ gameId, children, history }: GameShellProps) {
             <h1 className="font-bold text-white text-sm sm:text-base">{meta?.name}</h1>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0f212e] text-[#b1bad3]">{meta?.houseEdgePct}% edge</span>
             {meta?.tag && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#00e701]/20 text-[#00e701] uppercase">{meta.tag}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#00c2ff]/20 text-[#00c2ff] uppercase">{meta.tag}</span>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowFair((s) => !s)}
-            className="text-[#b1bad3] hover:text-white hover:bg-[#213743] h-8 text-xs"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Fairness
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={toggleFullscreen} className="text-[#b1bad3] hover:text-white hover:bg-[#213743] h-8 text-xs">
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFair((s) => !s)}
+              className="text-[#b1bad3] hover:text-white hover:bg-[#213743] h-8 text-xs"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Fairness
+            </Button>
+          </div>
         </div>
 
         {showFair && (
@@ -97,7 +105,7 @@ export function GameShell({ gameId, children, history }: GameShellProps) {
                 <FairRow label="Nonce" value={String(seeds.active.nonce)} />
                 {seeds.previous && (
                   <>
-                    <div className="pt-1.5 mt-1.5 border-t border-[#2f4553] text-[#00e701] font-semibold uppercase tracking-wider">Previous (revealed)</div>
+                    <div className="pt-1.5 mt-1.5 border-t border-[#2f4553] text-[#00c2ff] font-semibold uppercase tracking-wider">Previous (revealed)</div>
                     <FairRow label="Server Seed" value={seeds.previous.serverSeed} />
                     <FairRow label="Client Seed" value={seeds.previous.clientSeed} />
                     <FairRow label="Nonce" value={String(seeds.previous.nonce)} />
@@ -123,6 +131,7 @@ export function GameShell({ gameId, children, history }: GameShellProps) {
           {history}
         </div>
       )}
+      </div>
     </div>
   );
 }

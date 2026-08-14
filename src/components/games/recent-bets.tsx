@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { RecentBet } from "./game-view";
@@ -41,10 +41,10 @@ export function RecentBets({ bets }: RecentBetsProps) {
                 <td className="py-2 px-3 text-right tabular-nums text-[#b1bad3]">
                   {b.bet.toFixed(4)} {b.asset}
                 </td>
-                <td className={`py-2 px-3 text-right tabular-nums font-bold ${b.win ? "text-[#00e701]" : "text-[#ff5c5c]"}`}>
+                <td className={`py-2 px-3 text-right tabular-nums font-bold ${b.win ? "text-[#00c2ff]" : "text-[#ff5c5c]"}`}>
                   {b.multiplier > 0 ? `${b.multiplier.toFixed(2)}×` : "—"}
                 </td>
-                <td className={`py-2 px-3 text-right tabular-nums ${b.win ? "text-[#00e701]" : "text-[#b1bad3]"}`}>
+                <td className={`py-2 px-3 text-right tabular-nums ${b.win ? "text-[#00c2ff]" : "text-[#b1bad3]"}`}>
                   {b.payout > 0 ? `${b.payout.toFixed(4)} ${b.asset}` : "—"}
                 </td>
                 <td className="py-2 px-3 text-right tabular-nums text-[#b1bad3]">{b.nonce}</td>

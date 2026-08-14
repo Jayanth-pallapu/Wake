@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUiStore } from "@/store/ui";
 import { useWalletStore } from "@/store/wallet";
-import { GAMES } from "@/lib/constants";
+import { GAMES, SLOT_GAMES, type SlotGameMeta } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Flame, Trophy, Sparkles, Search, X, ChevronRight, TrendingUp } from "lucide-react";
 import Image from "next/image";
@@ -43,23 +43,23 @@ export function CasinoLobby() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl mb-5 bg-gradient-to-r from-[#0f212e] via-[#1475e1]/20 to-[#00e701]/10 border border-[#2f4553] p-6 sm:p-8"
+        className="relative overflow-hidden rounded-2xl mb-5 bg-gradient-to-r from-[#0f212e] via-[#1475e1]/20 to-[#00c2ff]/10 border border-[#2f4553] p-6 sm:p-8"
       >
         <div
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 80% 50%, #00e701 0, transparent 50%), radial-gradient(circle at 20% 50%, #1475e1 0, transparent 50%)",
+              "radial-gradient(circle at 80% 50%, #00c2ff 0, transparent 50%), radial-gradient(circle at 20% 50%, #1475e1 0, transparent 50%)",
           }}
         />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#00e701]/20 border border-[#00e701]/40 mb-3">
-              <Sparkles className="w-3 h-3 text-[#00e701]" />
-              <span className="text-[10px] font-bold text-[#00e701] uppercase tracking-wider">18 BC Originals — Provably Fair</span>
+            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#00c2ff]/20 border border-[#00c2ff]/40 mb-3">
+              <Sparkles className="w-3 h-3 text-[#00c2ff]" />
+              <span className="text-[10px] font-bold text-[#00c2ff] uppercase tracking-wider">18 BC Originals — Provably Fair</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-white mb-2 leading-tight">
-              The Ultimate <span className="text-[#00e701]">Crypto Casino</span>
+              The Ultimate <span className="text-[#00c2ff]">Crypto Casino</span>
             </h1>
             <p className="text-sm text-[#b1bad3] max-w-xl">
               HMAC-SHA256 provably fair · Instant crypto payouts · Live chat &amp; rain
@@ -68,7 +68,7 @@ export function CasinoLobby() {
           <div className="flex flex-wrap gap-2 shrink-0">
             <Button
               onClick={() => setView({ kind: "game", gameId: "crash" })}
-              className="bg-[#00e701] hover:bg-[#00c701] text-[#0a1f12] font-bold"
+              className="bg-[#00c2ff] hover:bg-[#009fd4] text-[#001a2e] font-bold"
             >
               <Flame className="w-4 h-4 mr-1" /> Play Crash
             </Button>
@@ -85,7 +85,7 @@ export function CasinoLobby() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-5">
-        <StatCard label="Your Balance"  value={`$${totalUsd.toFixed(2)}`} color="text-[#00e701]" />
+        <StatCard label="Your Balance"  value={`$${totalUsd.toFixed(2)}`} color="text-[#00c2ff]" />
         <StatCard label="BC Originals"  value={`${GAMES.length} Games`}    color="text-[#ff5cb1]" />
         <StatCard label="House Edge"    value="from 0.5%"                  color="text-[#ffd23f]" />
         <StatCard label="Assets"        value="8 Crypto"                   color="text-[#1475e1]" />
@@ -104,7 +104,7 @@ export function CasinoLobby() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search games…"
-            className="w-full pl-8 pr-7 py-2 text-xs bg-[#1a2c38] border border-[#2f4553] rounded-lg text-white placeholder:text-[#b1bad3] focus:outline-none focus:border-[#00e701]/50"
+            className="w-full pl-8 pr-7 py-2 text-xs bg-[#1a2c38] border border-[#2f4553] rounded-lg text-white placeholder:text-[#b1bad3] focus:outline-none focus:border-[#00c2ff]/50"
           />
           {search && (
             <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2">
@@ -122,14 +122,14 @@ export function CasinoLobby() {
             onClick={() => setActiveTab(tab.id)}
             className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap transition-colors ${
               activeTab === tab.id
-                ? "text-[#00e701] bg-[#00e701]/10"
+                ? "text-[#00c2ff] bg-[#00c2ff]/10"
                 : "text-[#b1bad3] hover:text-white hover:bg-[#1a2c38]"
             }`}
           >
             {activeTab === tab.id && (
               <motion.div
                 layoutId="tab-indicator"
-                className="absolute inset-0 rounded-lg bg-[#00e701]/10 border border-[#00e701]/30"
+                className="absolute inset-0 rounded-lg bg-[#00c2ff]/10 border border-[#00c2ff]/30"
               />
             )}
             <span className="relative z-10">{tab.label}</span>
@@ -176,21 +176,21 @@ export function CasinoLobby() {
           <p className="text-xs text-[#b1bad3]">Thousands of slots from top providers</p>
         </div>
         <button
-          onClick={() => setView({ kind: "casino" })}
-          className="text-xs text-[#b1bad3] hover:text-[#00e701] flex items-center gap-1"
+          onClick={() => setView({ kind: "slots-lobby" })}
+          className="text-xs text-[#b1bad3] hover:text-[#00c2ff] flex items-center gap-1"
         >
           View all <ChevronRight className="w-3 h-3" />
         </button>
       </div>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-6">
-        {MOCK_SLOTS.map((s, i) => (
+        {SLOT_GAMES.map((s, i) => (
           <motion.div
-            key={s.name}
+            key={s.id}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.03 }}
           >
-            <SlotCard slot={s} />
+            <SlotCard slot={s} onClick={() => setView({ kind: 'slots', slotId: s.id })} />
           </motion.div>
         ))}
       </div>
@@ -216,7 +216,7 @@ function GameCard({ game, onClick }: { game: (typeof GAMES)[number]; onClick: ()
     <button
       onClick={onClick}
       id={`game-card-${game.id}`}
-      className="group relative w-full text-left rounded-xl overflow-hidden border border-[#2f4553] hover:border-[#00e701]/50 transition-all duration-200 hover:scale-[1.03] hover:shadow-lg hover:shadow-[#00e701]/10 bg-[#1a2c38]"
+      className="group relative w-full text-left rounded-xl overflow-hidden border border-[#2f4553] hover:border-[#00c2ff]/50 transition-all duration-200 hover:scale-[1.03] hover:shadow-lg hover:shadow-[#00c2ff]/10 bg-[#1a2c38]"
     >
       {/* Thumbnail */}
       <div className={`relative aspect-[4/3] bg-gradient-to-br ${game.gradient}`}>
@@ -236,7 +236,7 @@ function GameCard({ game, onClick }: { game: (typeof GAMES)[number]; onClick: ()
         )}
         {/* Overlay on hover */}
         <div className="absolute inset-0 bg-[#0f212e]/0 group-hover:bg-[#0f212e]/60 transition-all duration-200 flex items-center justify-center">
-          <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[#00e701] text-[#0a1f12] text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+          <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[#00c2ff] text-[#001a2e] text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
             <Flame className="w-3 h-3" /> Play Now
           </span>
         </div>
@@ -244,9 +244,9 @@ function GameCard({ game, onClick }: { game: (typeof GAMES)[number]; onClick: ()
         {game.tag && (
           <span className={`absolute top-2 left-2 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
             game.tag === "New"     ? "bg-[#1475e1]/90 text-white" :
-            game.tag === "Popular" ? "bg-[#00e701]/90 text-[#0a1f12]" :
+            game.tag === "Popular" ? "bg-[#00c2ff]/90 text-[#001a2e]" :
             game.tag === "Turbo"   ? "bg-[#ff5cb1]/90 text-white" :
-            game.tag === "Fast"    ? "bg-[#ffd23f]/90 text-[#0a1f12]" :
+            game.tag === "Fast"    ? "bg-[#ffd23f]/90 text-[#001a2e]" :
                                     "bg-[#0f212e]/80 text-[#b1bad3]"
           }`}>
             {game.tag}
@@ -263,34 +263,67 @@ function GameCard({ game, onClick }: { game: (typeof GAMES)[number]; onClick: ()
 }
 
 // ---- SlotCard ----
-const MOCK_SLOTS = [
-  { name: "Sweet Bonanza",     provider: "Pragmatic", emoji: "🍬", color: "from-pink-500/30 to-rose-700/20" },
-  { name: "Gates of Olympus",  provider: "Pragmatic", emoji: "⚡", color: "from-blue-500/30 to-indigo-700/20" },
-  { name: "Big Bass Bonanza",  provider: "Pragmatic", emoji: "🎣", color: "from-cyan-500/30 to-teal-700/20" },
-  { name: "Book of Dead",      provider: "Play'n GO", emoji: "📖", color: "from-amber-500/30 to-orange-700/20" },
-  { name: "Crazy Time",        provider: "Evolution", emoji: "🎡", color: "from-fuchsia-500/30 to-purple-700/20", live: true },
-  { name: "Lightning Roulette",provider: "Evolution", emoji: "⚡", color: "from-yellow-500/30 to-amber-700/20", live: true },
-  { name: "Wanted Dead",       provider: "Hacksaw",   emoji: "🤠", color: "from-orange-500/30 to-red-700/20" },
-  { name: "Sugar Rush",        provider: "Pragmatic", emoji: "🧁", color: "from-pink-400/30 to-fuchsia-700/20" },
-  { name: "Fruit Party",       provider: "Pragmatic", emoji: "🍓", color: "from-red-500/30 to-rose-700/20" },
-  { name: "Dog House",         provider: "Pragmatic", emoji: "🐶", color: "from-emerald-500/30 to-green-700/20" },
-  { name: "Money Train",       provider: "Relax",     emoji: "🚂", color: "from-slate-400/30 to-slate-700/20" },
-  { name: "Wild West Gold",    provider: "Pragmatic", emoji: "🌵", color: "from-lime-500/30 to-green-700/20" },
-];
+function SlotCard({ slot, onClick }: { slot: SlotGameMeta; onClick?: () => void }) {
+  const [transform, setTransform] = useState("perspective(600px) rotateX(0deg) rotateY(0deg)");
+  const [imgErr, setImgErr] = useState(false);
 
-function SlotCard({ slot }: { slot: (typeof MOCK_SLOTS)[number] }) {
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rx = ((x - cx) / cx) * 10;
+    const ry = ((cy - y) / cy) * 10;
+    setTransform(`perspective(600px) rotateX(${ry}deg) rotateY(${rx}deg)`);
+  };
+
+  const handleMouseLeave = () => {
+    setTransform("perspective(600px) rotateX(0deg) rotateY(0deg)");
+  };
+
   return (
-    <div className="bg-gradient-to-br from-[#1a2c38] to-[#213743] border border-[#2f4553] rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] hover:border-[#2f4553]/80 transition-all">
-      <div className={`aspect-square flex flex-col items-center justify-center p-2 relative bg-gradient-to-br ${slot.color}`}>
+    <button
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ transform, transition: "transform 0.15s ease-out" }}
+      className="group w-full text-left bg-[#1a2c38] border border-[#2f4553] rounded-xl overflow-hidden cursor-pointer hover:border-[#00c2ff]/40 hover:shadow-lg hover:shadow-[#00c2ff]/10 transition-all duration-200"
+    >
+      {/* Thumbnail */}
+      <div className={`relative aspect-[3/4] bg-gradient-to-br ${slot.color} overflow-hidden`}>
+        {!imgErr && slot.imageUrl ? (
+          <Image
+            src={slot.imageUrl}
+            alt={slot.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={() => setImgErr(true)}
+            unoptimized
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{slot.emoji}</span>
+          </div>
+        )}
+        {/* Play overlay */}
+        <div className="absolute inset-0 bg-[#0f212e]/0 group-hover:bg-[#0f212e]/55 transition-all duration-200 flex items-center justify-center">
+          <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-[#00c2ff] text-[#001a2e] text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+            <Flame className="w-3 h-3" /> Play Now
+          </span>
+        </div>
+        {/* LIVE badge */}
         {slot.live && (
-          <span className="absolute top-1 right-1 text-[8px] px-1 py-0.5 rounded bg-[#ff3b3b] text-white uppercase font-bold flex items-center gap-0.5">
-            <span className="w-1 h-1 rounded-full bg-white animate-pulse" /> Live
+          <span className="absolute top-2 left-2 text-[8px] px-1.5 py-0.5 rounded bg-[#ff3b3b] text-white uppercase font-bold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> Live
           </span>
         )}
-        <div className="text-3xl mb-1">{slot.emoji}</div>
-        <div className="text-[10px] font-semibold text-white text-center leading-tight">{slot.name}</div>
-        <div className="text-[8px] text-[#b1bad3]">{slot.provider}</div>
+        {/* Provider badge top-right */}
+        <span className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent px-2 pt-4 pb-1.5">
+          <div className="font-bold text-white text-[11px] leading-tight truncate">{slot.name}</div>
+          <div className="text-[9px] text-[#b1bad3]">{slot.provider}</div>
+        </span>
       </div>
-    </div>
+    </button>
   );
 }

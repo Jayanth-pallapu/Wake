@@ -9,7 +9,10 @@ export type ViewId =
   | { kind: "vip" }
   | { kind: "wallet" }
   | { kind: "leaderboard" }
-  | { kind: "affiliate" };
+  | { kind: "affiliate" }
+  | { kind: "slots"; slotId: string }
+  | { kind: "slots-lobby" }
+  | { kind: "contests" };
 
 interface UiState {
   view: ViewId;
