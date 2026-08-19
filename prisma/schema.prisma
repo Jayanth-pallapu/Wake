@@ -1,13 +1,12 @@
 // Crypto Casino & Sportsbook — Prisma Schema
-// SQLite provider. BigInt used for all monetary balances (satoshis-like precision).
-// Note: SQLite stores BigInt as TEXT; Prisma handles conversion.
+// PostgreSQL provider (Neon / Vercel Postgres). BigInt used for all monetary balances.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
